@@ -20,4 +20,8 @@ test4
 
 test55
 
+<<<<<<< HEAD
 test.final
+=======
+test6
+>>>>>>> f5ecf8301bb18b86d39061bc943f6c10785cbae8
