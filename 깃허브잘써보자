@@ -2,3 +2,11 @@
 만들었지롱~ kevin_test_branch로다가~\
 이거작업하고있어용
 근데 갑자기 main 브랜치에다가 뭘 바꿔달라네? 아직 커밋하긴 좀 그런데 ...
+
+---
+merge하는 방법은 세 가지가 있어요.
+1. merge
+
+2. squash and merge
+
+3. rebase and merge
