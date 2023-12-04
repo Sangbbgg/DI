@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>form_Teg</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body{
             background-color:bisque;
         }
@@ -14,33 +19,34 @@
             background-color: whitesmoke;
             margin: 0 auto;
             border-radius: 10px;
-            padding: 20px;
         }
 
-        h1 {
-            font-size: 23px;
+        /* 곽별이 */
+        h2 { margin: 20px; }
+
+        ul{
+            list-style: none;
+            margin: 20px;
         }
-
-        #name {
-            width: 100%; height: 25px;
-            margin-top: 5px;
-        }
-
-
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="yeonjin">
-            <h1>How can we help you?</h1>
-                <section>
-                    <form>
-                        <label for="Name">Your Name</label>
-                        <input type="text" id="name">
-                        </fieldset>
-                    </form>
-                </section>
+
+        <!-- 곽별이 -->
+        <div class="kimkwark">
+            <section>
+                <h2>How should we reply?</h2>
+                <ul>
+                    <li><label><input type="radio" name="reply" value="call">Call meeeee</label></li>
+                    <li><label><input type="radio" name="reply" value="send">Send me an email</label></li>
+                    <li><label><input type="radio" name="reply" value="don">Don't reply</label></li>
+                    <br>
+                    <li><label><input type="checkbox">Accept Terms</label></li>
+                </ul>
+            </section>
         </div>
+
     </div>
 </body>
 </html>
