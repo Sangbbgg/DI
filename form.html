@@ -6,8 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>form_Teg</title>
     <style>
+<<<<<<< HEAD
         body {
             background-color: bisque;
+=======
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body{
+            background-color:bisque;
+>>>>>>> 0c80078af815f3618dcf4166be7546ed0ab5ee51
         }
 
         .container {
@@ -16,6 +27,28 @@
             background-color: whitesmoke;
             margin: 0 auto;
             border-radius: 10px;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 23px;
+        }
+
+        #name {
+            width: 100%; height: 25px;
+            margin-top: 5px;
+        }
+
+        /* Your Message - 김지수 */
+        .form-textarea {
+            margin-top: 16px;
+        }
+
+        .form-textarea textarea {
+            margin-top: 5px;
+            width: 100%;
+            height: 180px;
+            resize: none;
         }
         /* 상호형 */
         .button{
@@ -37,9 +70,27 @@
 
 <body>
     <div class="container">
+<<<<<<< HEAD
         <div class="button">
             <button>Clear</button>
             <button>Submit</button>
+=======
+        <div class="yeonjin">
+            <h1>How can we help you?</h1>
+                <section>
+                    <form>
+                        <label for="Name">Your Name</label>
+                        <input type="text" id="name">
+                        </fieldset>
+                    </form>
+                </section>
+        </div>
+
+        <!-- Your Message - 김지수-->
+        <div class="form-textarea">
+            <p class="form-label">Your Message</p>
+            <textarea name="" id="" cols="" rows=""></textarea>
+>>>>>>> 0c80078af815f3618dcf4166be7546ed0ab5ee51
         </div>
     </div>
 </body>
