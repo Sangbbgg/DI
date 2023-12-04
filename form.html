@@ -1,25 +1,47 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>form_Teg</title>
     <style>
-        body{
-            background-color:bisque;
+        body {
+            background-color: bisque;
         }
-        .container{
+
+        .container {
             width: 60%;
             height: 100vh;
             background-color: whitesmoke;
             margin: 0 auto;
             border-radius: 10px;
         }
+        /* 상호형 */
+        .button{
+            float: right;
+            margin-right: 20px;
+        }
+        .button>button{
+            width: 90px;
+            height: 30px;
+            border: 1px solid blue;
+            border-radius: 10px;
+        }
+        button:hover{
+            color:whitesmoke;
+            background-color: blue;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
-
+        <div class="button">
+            <button>Clear</button>
+            <button>Submit</button>
+        </div>
     </div>
 </body>
+
 </html>
