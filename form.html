@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,33 +9,40 @@
         body {
             background-color: bisque;
         }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        body{
-            background-color:bisque;
+        body {
+            background-color: bisque;
         }
-        .container{
+
+        .container {
             width: 60%;
             height: 100vh;
             background-color: whitesmoke;
             margin: 0 auto;
             border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px gray;
         }
 
         /* 곽별이 */
-        h2 { margin: 20px; }
+        h2 {
+            margin: 20px;
+        }
 
-        ul{
+        ul {
             list-style: none;
             margin: 20px;
         }
 
         #name {
-            width: 100%; height: 25px;
+            width: 100%;
+            height: 25px;
             margin-top: 5px;
         }
 
@@ -49,27 +57,30 @@
             height: 180px;
             resize: none;
         }
+
         /* 상호형 */
-        .button{
+        .button {
             float: right;
             margin-right: 20px;
         }
-        .button>button{
+
+        .button>button {
             width: 90px;
             height: 30px;
             border: 1px solid blue;
             border-radius: 10px;
         }
-        button:hover{
-            color:whitesmoke;
+
+        button:hover {
+            color: whitesmoke;
             background-color: blue;
         }
 
-        .option_list > p {
+        .option_list>p {
             margin: 10px;
         }
 
-        .option_list > p:first-child {
+        .option_list>p:first-child {
             opacity: 0.7;
         }
 
@@ -82,19 +93,70 @@
 
         /* 이기현 */
         .phoneBox {
-        display: flex;
-        justify-content: center;
-      }
-      .inputPhone {
-        width: 55vw;
-        height: 30px;
-        border: 1px solid red;
-        border-radius: 5px;
-      }
+            display: flex;
+            justify-content: center;
+        }
+
+        .inputPhone {
+            width: 55vw;
+            height: 30px;
+            border: 1px solid red;
+            border-radius: 5px;
+        }
+
+        /* Your E-Mail Address - 이주호 */
+        .leejuho p {
+            margin: 1px 0;
+        }
+
+        .leejuho input {
+            border: 1px solid gray;
+            border-radius: 2px;
+            width: 100%;
+            height: 25px;
+            margin-top: 5px;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
+        <div class="yeonjin">
+            <h1>How can we help you?</h1>
+            <section>
+                <form>
+                    <label for="Name">Your Name</label>
+                    <input type="text" id="name">
+                    </fieldset>
+                </form>
+            </section>
+        </div>
+        <!-- Your E-Mail Address - 이주호-->
+        <div class="leejuho">
+            <p>Your E-Mail Address</p>
+            <input type="text">
+        </div>
+        <!-- 이기현  -->
+        <div class="phoneBox">
+            <form method="get" class="phoneForm">
+                <legend>Your Phone Number</legend>
+                <input class="inputPhone" type="tel" placeholder="번호를 입력해주세요." />
+            </form>
+        </div>
+        <!-- Your Message - 김지수-->
+        <div class="form-textarea">
+            <p class="form-label"><label for="userTxtarea">Your Message</label></p>
+            <textarea name="" id="userTxtarea" cols="" rows=""></textarea>
+        </div>
+        <div class="option_list">
+            <p>How did you find us?
+            <p>
+                <select size="1" class="option_items">
+                    <option value="Web">Web Search</option>
+                    <option value="word">Word of Mouth</option>
+                    <option value="other">Oter</option>
+                </select>
+        </div>
 
         <!-- 곽별이 -->
         <div class="kimkwark">
@@ -109,45 +171,10 @@
                 </ul>
             </section>
         </div>
-
         <div class="button">
             <button>Clear</button>
             <button>Submit</button>
-        <div class="yeonjin">
-            <h1>How can we help you?</h1>
-                <section>
-                    <form>
-                        <label for="Name">Your Name</label>
-                        <input type="text" id="name">
-                        </fieldset>
-                    </form>
-                </section>
-        </div>
 
-        <!-- Your Message - 김지수-->
-        <div class="form-textarea">
-            <p class="form-label"><label for="userTxtarea">Your Message</label></p>
-            <textarea name="" id="userTxtarea" cols="" rows=""></textarea>
-        </div>
-        <div class="option_list">
-            <p>How did you find us?<p>
-            <select size="1" class="option_items">
-                <option value="Web">Web Search</option>
-                <option value="word">Word of Mouth</option>
-                <option value="other">Oter</option>
-            </select>
-        </div>
-        <!-- 이기현  -->
-    <div class="phoneBox">
-        <form method="get" class="phoneForm">
-          <legend>Your Phone Number</legend>
-          <input
-            class="inputPhone"
-            type="tel"
-            placeholder="번호를 입력해주세요."
-          />
-        </form>
-        </div>
-    </>
 </body>
+
 </html>
