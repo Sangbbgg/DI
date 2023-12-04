@@ -6,10 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>form_Teg</title>
     <style>
-<<<<<<< HEAD
         body {
             background-color: bisque;
-=======
+        }
         * {
             margin: 0;
             padding: 0;
@@ -18,7 +17,6 @@
 
         body{
             background-color:bisque;
->>>>>>> 0c80078af815f3618dcf4166be7546ed0ab5ee51
         }
 
         .container {
@@ -65,16 +63,29 @@
             color:whitesmoke;
             background-color: blue;
         }
+
+        .option_list > p {
+            margin: 10px;
+        }
+
+        .option_list > p:first-child {
+            opacity: 0.7;
+        }
+
+        .option_items {
+            padding-left: 10px;
+            width: 100%;
+            height: 30px;
+            border-radius: 5px;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
-<<<<<<< HEAD
         <div class="button">
             <button>Clear</button>
             <button>Submit</button>
-=======
         <div class="yeonjin">
             <h1>How can we help you?</h1>
                 <section>
@@ -90,7 +101,14 @@
         <div class="form-textarea">
             <p class="form-label">Your Message</p>
             <textarea name="" id="" cols="" rows=""></textarea>
->>>>>>> 0c80078af815f3618dcf4166be7546ed0ab5ee51
+        </div>
+        <div class="option_list">
+            <p>How did you find us?<p>
+            <select size="1" class="option_items">
+                <option value="Web">Web Search</option>
+                <option value="word">Word of Mouth</option>
+                <option value="other">Oter</option>
+            </select>
         </div>
     </div>
 </body>
