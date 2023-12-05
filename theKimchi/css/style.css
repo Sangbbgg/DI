@@ -1,0 +1,282 @@
+@import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css);
+
+.notosanskr * { 
+ font-family: 'Noto Sans KR', sans-serif;
+}
+
+
+* { margin:0; padding:0; box-sizing: border-box; }
+li {list-style: none;}
+a { text-decoration: none; color:#333; display: block;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+/* a태그에 마우스 오버하면 글자색 회색으로 변경 */
+a:hover {
+    color: #ccc;
+}
+img {width: 100%;}
+body { font-family: 'Noto Sans KR', sans-serif; }
+/* 헤더 */
+header {
+   margin: 0 auto;
+   width: 1200px;
+   height: 140px;
+   vertical-align: middle;
+   position: fixed;
+   top: 0;
+   left: 50%;
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   transform: translateX(-50%);
+   background-color: #fff;
+   transition: height 0.5s;
+    /* margin:0 auto; */
+    /*가로 간격 일정하게*/
+      /*세로 가운데 정렬*/
+    /* 헤더를 브라우저의 맨 위에 고정시키기 */
+    z-index: 10;
+
+    /* header가 section보다 앞으로 나오도록 순서 변경 */
+
+}
+/* 헤더에 active 클래스 추가하기 */
+header.active {
+    
+}
+/* 로고 */
+header .logo {
+   width: 140px;
+}
+/* 내비게이션(GNB:Global Navigation Bar) */
+header nav {
+    width: 500px;
+    height: 30px;
+}
+/* 직속 자식 선택자 : > */
+header nav > ul {
+    /* 자식 객체 li를 가로(row:행기준)로 나열 */
+    display: flex;
+    /* 균등 정렬 */
+    justify-content: space-between;
+}
+/* 서브메뉴(.sub)의 위치 설정할 때 기준은 부모객체 li가 됨 */
+header nav > ul > li {
+    position: relative;
+}
+/* 주메뉴의 글자 크기 작게 - 직속 자식 선택자*/
+header nav > ul > li > a {
+    font-size: 15px;
+    /* 주메뉴와 서브메뉴의 거리 조절(간격) */
+    padding-bottom: 20px
+    /* margin-bottom: 20px; */
+}
+/* 서브메뉴 - 하위 선택자*/
+header nav .sub {
+    position: absolute;
+    background-color: #444;
+    padding: 20px 40px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s;
+    left: 50%;
+    transform:translateX(-50%);
+}
+header nav .sub li a {
+    font-size: 13px;
+    color: #fff;
+    padding: 5px 0;
+    text-align: center;
+}
+/* 주메뉴에 마우스 오버했을 때 서브메뉴 나타남 */
+header nav > ul > li:hover .sub {
+    opacity: 1;
+    visibility: visible;
+}
+/* 서브메뉴에 마우스 오버했을 때 서브메뉴 글자색 변경 */
+header nav .sub li a:hover {
+    color:#ccc;
+}
+
+/* header안의 자식 객체 .top_menu를 가리킴, 띠어쓰기(하위선택자) */
+header .top_menu {
+    width:280px;
+}
+header .top_menu ul {
+    display: flex;
+    justify-content: space-between;
+}
+header .top_menu ul li a {
+   font-size: 13px;
+   letter-spacing: -1px;
+   position: relative;
+}
+/* 장바구니 위에 숫자 0 넣기 */
+header .top_menu ul li:last-child a:after {
+    content: "0";
+    position: absolute;
+    left: 5px;
+    top: 4px;
+    color: #fff;
+    font-size: 10px;
+}
+
+/* 본문 */
+section {
+   width: 1200px;
+    /* 브라우저의 가운데로 정렬 */
+   margin: 0 auto;
+   margin-top: 130px;
+}
+section .banner {
+    width:100%;
+    height: 1500px;
+    display: flex;
+    flex-flow: column wrap;
+    /* 자식객체들(div.box)을 열기준으로 정렬 */
+    /*열기준, 줄바꿈 허용*/
+    /* justify-content:space-between;  */
+    align-content: space-between;  
+    margin-top: 20px;
+}
+section .banner .box {
+    width:384px;
+    padding: 10px;
+    background-color: #eee;
+    margin-top: 40px;
+}
+section .banner .box h2 {
+    margin-top: 30px;
+    margin-bottom: 20px;
+    color: #444;
+    font-weight: normal;   /*글자 보통 굵기로*/
+    font-size: 20px;
+}
+section .banner .box p {
+    font-size:14px;
+    line-height: 24px;
+    margin-bottom: 30px;
+}
+/* 푸터(footer) */
+footer {
+    width:100%;
+    background-color: #f8f8f8;
+    padding: 50px 0;
+    margin-top: 80px;
+}
+footer .footer_wrap {
+    width:1000px;
+    margin: 0 auto;
+    display: flex;
+    flex-flow: row nowrap;
+    /* 자식 객체 div들이 가로로 균등 배열 됨 */
+    /*행기준 줄바꿈 금지*/
+    justify-content: space-between;
+}
+footer .footer_wrap .about ul li a {
+    font-size:11px;
+    white-space: nowrap;   /*글자 줄바꿈 방지*/
+}
+/* 푸터의 about영역의 메뉴에 마우스 오버하면 밑줄 나옴 */
+footer .footer_wrap .about ul li a:hover {
+    text-decoration: underline;
+    color:#333;
+}
+/* 푸터의 about영역의 세번째 메뉴만 굵게 */
+footer .footer_wrap .about ul li:nth-child(3) a {
+    font-weight: bold;
+}
+footer .footer_wrap h3 {
+    font-size:11px;
+    font-weight: normal;
+    line-height:30px;
+}
+footer .footer_wrap b {
+    font-weight: normal;
+    line-height:30px;
+}
+footer .footer_wrap p {
+    font-size:11px;
+    line-height:20px;
+}
+footer .footer_wrap address {
+    font-style:normal;     /*기울어지지 않게*/
+    font-size:11px;
+    line-height:20px;
+    margin-bottom: 24px;
+}
+/* 탑버튼(TOP) */
+.top {
+    width: 30px;
+    height: 30px;
+    position: fixed;
+    bottom: 30px;
+    right: 40px;
+}
+
+
+/* 서브페이지 */
+.i_love_you {
+    width:1200px;
+    margin:0 auto;
+    ??
+}
+.i_love_you .love_left img {
+    ??
+}
+.i_love_you .love_right {
+    /* 이미지를 love_right 영역의 아래쪽에 배치 */
+   ??
+}
+.i_love_you p {
+    ??
+}
+section .gift{
+    width: 100%;
+    margin-top:20px;
+}
+section .gift h2{
+    text-align: center;
+    font-size: 16px;
+    letter-spacing: 3px;/*자간*/
+}
+section .gift .sub_tabs{
+    width: 500px;
+   ??
+}
+section .gift .sub_tabs ul{
+  ???
+}
+section .gift .sub_tabs ul li a{
+    font-size: 12px;
+    ??
+}
+/* GIFT 부제목의 오른쪽에 회색 막대 넣기 */
+section .gift .sub_tabs ul li a:after{
+    content:"|";
+    ??
+}
+/* 마지막 li의 a태그의 오른쪽 막대 없애기 */ /*위에 막대기 넣었는데 홈페이지 우측보면 막대기 없었음*/
+section .gift .sub_tabs ul li:last-child a:after{
+    content:""; /*내용없음*/
+}
+section .gift .gift_box{
+    /* 자식객체 div 6(gift1~gift6)개를 가로로 나열 */
+    ??
+    /* 자식객체 div 6개를 행기준으로 나열,줄바꿈 허용x */
+    ??
+}
+section .gift .gift_box div{
+    width:280px;
+    ??
+    
+}
+section .gift .gift_box div p{
+    font-size: 13px;
+   ??
+}
+section .gift .gift_box div span{
+    font-size: 11px;
+    ??? /*인라인요소를 블록요소로 변환 - span은 블록요소가 아님*/
+   ??
+}
