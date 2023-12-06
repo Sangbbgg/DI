@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        form {
+            border: 1px solid black;
+            padding: 10px;
+        }
+
+        div {
+            width: 240px;
+            text-align: right;
+        }
+
+        label {
+            width: 50px;
+            display: inline-block;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <form>
+        <legend>입력 양식</legend>
+        <div class="name">
+            <label>이름</label>
+            <input type="text" id="box">
+        </div>
+        <div class="email">
+            <label>이메일</label>
+            <input type="text" id="box">
+        </div>
+        <input type="submit" value="제출">
+    </form>
+    <!-- <form>
+        <fieldset>
+            <legend>입력 양식</legend>
+            <teable>
+                <tr>
+                    <td><label for="name">이름</label></td>
+                    <td><input id="name" type="text"></td>
+                </tr>
+                <tr>
+                    <td><label for="email">이메일</label></td>
+                    <td><input for="email" type="email"></td>
+                </tr>
+            </teable>
+            <input type="submit">
+        </fieldset>
+    </form> -->
+</body>
+</html>
