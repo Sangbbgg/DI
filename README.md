@@ -12,7 +12,7 @@
 
     1. 폴더생성 ex) tanso
     2. 폴더 내부 터미널(Git Bash) open
-    3. git clone https://github.com/Sangbbgg/tanso.git .
+    3. git clone https://github.com/Sangbbgg/ezAWS_TeamSceond.git .
     -> 맨뒤에 .을 붙이는건 폴더를 추가 생성하지 않고 현재 열려진 디렉토리에 Git 파일들을 내려받는 다는 뜻.
     3-1. npm i 
     -> 라이브러리 install
