@@ -6,7 +6,7 @@
     React port:3000,
     node.js port:8000,
     서버 실행 명령어 : npm start
-    -> node.js, react 동싱 서버 구동
+    -> node.js, react 동시 서버 구동
 
 ## git 명령어 목록
 
