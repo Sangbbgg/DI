@@ -5,6 +5,11 @@ import Header from "./Compornents/Header";
 import Footer from "./Compornents/Footer";
 import CarbonFootprint from "./view/CarbonFootprint";
 
+// 이기현(임시) ------------------
+import Cart from "./component/Cart"; // 이기현_장바구니 컴포넌트
+import Ordersheet from "./component/Ordersheet"; // 이기현_오더시트 컴포넌트
+//-------------------------
+
 function App() {
   return (
     <Router>
@@ -22,6 +27,10 @@ function App() {
           {/* 상호형 */}
           <Route exact path="/CarbonFootprint" element={<CarbonFootprint />} />
           {/* 이기현 */}
+          <Route path="/cart" element={<Cart />} />
+          {/* "/" 로컬 장바구니 페이지 라우팅 */}
+          <Route path="/ordersheet" element={<Ordersheet />} />
+          {/* "/" 주문서 작성 페이지 라우팅 */}
           {/* 이주호 */}
           {/* 김민호 */}
           {/* 전윤호 */}
