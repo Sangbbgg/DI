@@ -12,27 +12,22 @@
 
     1. 폴더생성 ex) tanso
     2. 폴더 내부 터미널(Git Bash) open
-    3. git clone https://github.com/Sangbbgg/ezAWS_TeamSceond.git .
-    -> 맨뒤에 .을 붙이는건 폴더를 추가 생성하지 않고 현재 열려진 디렉토리에 Git 파일들을 내려받는 다는 뜻.
-    3-1. npm i 
-    -> 라이브러리 install
+    3. git clone https://github.com/Sangbbgg/ezAWS_TeamSceond.git .    -> 맨뒤에 .을 붙이는건 폴더를 추가 생성하지 않고 현재 열려진 디렉토리에 Git 파일들을 내려받는 다는 뜻.
+    3-1. npm i    -> node.js 패키지 설치 
+    3-2. cd client    -> client 디렉토리 이동
+    3-3. npm i    -> react 패키지 설치
+    3-5. cd ..    -> 프로젝트 디렉토리로 이동
 
     코드 작성
 
-    4. git add .
-    -> 변경 사항 전체 add
-    5. git commit -m "log기록"
-    -> 코드 작성/변경/수정 등 변경사항을 간략요약 하여 작성
+    4. git add .    -> 변경 사항 전체 add
+    5. git commit -m "log기록"    -> 코드 작성/변경/수정 등 변경사항을 간략요약 하여 작성
     ----------------------------------------------------------
-    6. git branch -M main
-    -> 중요! 기존 실습때 브랜치명이 서로 달라서 오류를 격었었음.
-    => 이 코드는 내 업로드 마스터 브랜치를 main으로 변경하는 코드
-    ! 한번만 실행하면됨 or 코드 작성 환경이 바뀌었을때 실행
+    6. git branch -M main    -> 중요! 기존 실습때 브랜치명이 서로 달라서 오류를 격었었음.
+       => 이 코드는 내 업로드 마스터 브랜치를 main으로 변경하는 코드
+       ! 한번만 실행하면됨 or 코드 작성 환경이 바뀌었을때 실행
     ----------------------------------------------------------
-    7. git push origin main
-    -> 완료
-
-     * 코드 작성 전 or push할 변동내용을없을때
-     주기적으로 
-     8. git pull 
-     명령어로 원격 repositorie의 내용을 최신화 할 것.
+    7. git push origin main    -> 완료
+       * 코드 작성 전 or push할 변동내용을없을때 주기적으로 
+    8. git pull 
+       명령어로 원격 repositorie의 내용을 최신화 할 것.
