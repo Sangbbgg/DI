@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 import axios from "axios";
 
-import "./Ordersheet.css";
+// import "./Ordersheet.css";
 
 const Ordersheet = () => {
   const [userInfo, setUserInfo] = useState([]); // 로그인된 사용자 상세 정보를 저장하기 위한 상태값
