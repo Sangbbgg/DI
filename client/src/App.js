@@ -27,7 +27,7 @@ function App() {
           {/* 김연진 */}
           {/* 김지수 */}
           {/* 상호형 */}
-          <Route exact path="/CarbonFootprint" element={<CarbonFootprint />} />
+          <Route exact path="/carbonFootprint" element={<CarbonFootprint />} />
           {/* 이기현 */}
           <Route path="/cart" element={<Cart />} />
           {/* "/" 로컬 장바구니 페이지 라우팅 */}

@@ -40,11 +40,12 @@ function CarbonFootprint() {
   }
 
   const handleTabChange = (tabName) => {
-    if ((tabName === "result" || tabName === "practice") && !resultData) {
-      alert("제출하기 완료하신 후에 결과확인하실 수 있습니다.");
-    } else {
-      setActiveTab(tabName);
-    }
+    setActiveTab(tabName);
+    // if ((tabName === "result" || tabName === "practice") && !resultData) {
+    //   alert("제출하기 완료하신 후에 결과확인하실 수 있습니다.");
+    // } else {
+    //   setActiveTab(tabName);
+    // }
   };
 
   const handleResultSubmit = (resultData) => {

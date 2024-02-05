@@ -85,7 +85,11 @@ function Consumption({ data }) {
     if (mockData.kg !== "") {
       wasteValue = mockData.kg * wasteCost["kg"];
     } else if (mockData.l !== "") {
-      wasteValue = mockData.l * parseFloat(wasteCost["l"]);
+      const [val1, val2] = Object.values(
+        wasteCost["l"].split(" * ").map(Number)
+      );
+      wasteValue = mockData.l * val1 * val2;
+      console.log(val1);
     }
 
     setCo2Emission({
@@ -95,14 +99,9 @@ function Consumption({ data }) {
       gas: parseFloat(mockData.gas * gasCost.gas).toFixed(1),
       water: parseFloat(mockData.water * waterCost.water).toFixed(1),
       transportation: transportationValue.toFixed(1),
-      waste: wasteValue,
+      waste: wasteValue.toFixed(1),
     });
   }, []);
-  console.log("결과값", co2Emission);
-  console.log(
-    "electricity:3.3 gas:15.2 water:1.7 transportation:1.2 waste:0.7  "
-  );
-  console.log("넘겨 받은 data", data);
 
   return <div></div>;
 }
