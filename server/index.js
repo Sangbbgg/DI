@@ -6,6 +6,9 @@ const app = express();
 const port = 8000;
 const bodyParser = require("body-parser");
 
+// 상호형 -------------------------------
+const carbonFootprintRouter = require("./Routes/CarbonFootprint");
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -46,7 +49,7 @@ app.get("/", (req, res) => res.send(`Hell'o World!`));
 // 김지수 -------------------------------
 
 // 상호형 -------------------------------
-
+app.use("/api/carbonFootprint", carbonFootprintRouter);
 // 이기현 -------------------------------
 
 // orders 테이블이 존재하지 않을 경우 생성 쿼리문
@@ -132,43 +135,44 @@ app.get("/ordersheet", async (req, res, next) => {
 // 전윤호 -------------------------------
 
 // products테이블의 데이터를 /shop 경로로 전달
-app.get("/shop", (req,res) => {
+app.get("/shop", (req, res) => {
   const sqlQuery = "SELECT * FROM PRSHOP.PRODUCTS;";
   connection.query(sqlQuery, (err, result) => {
-      res.send(result);
-  })
-})
+    res.send(result);
+  });
+});
 // review 테이블의 데이터를 /review 경로로 전달
-app.get("/review", (req,res) => {
+app.get("/review", (req, res) => {
   const sqlQuery = "SELECT * FROM PRSHOP.REVIEW;";
   connection.query(sqlQuery, (err, result) => {
-      res.send(result);
-  })
-})
+    res.send(result);
+  });
+});
 
 // question 테이블의 데이터를 /question 경로로 전달
-app.get("/question", (req,res) => {
+app.get("/question", (req, res) => {
   const sqlQuery = "SELECT * FROM PRSHOP.QUESTION;";
   connection.query(sqlQuery, (err, result) => {
-      res.send(result);
-  })
-})
+    res.send(result);
+  });
+});
 
 // 클라이언트의 req (response,questionid)을 받아 question 테이블의 해당 questionid의 response 컬럼값을 req.body.response로 업데이트
 app.put("/question", (req, res) => {
   const response = req.body.response;
-  const questionid = req.body.questionid;   
-  const sqlQuery = "UPDATE PRSHOP.QUESTION SET response = ? WHERE questionid = ?;"
+  const questionid = req.body.questionid;
+  const sqlQuery =
+    "UPDATE PRSHOP.QUESTION SET response = ? WHERE questionid = ?;";
   connection.query(sqlQuery, [response, questionid], (err, result) => {
-      if (err) {
-          console.error("Database error:", err);
-          res.status(500).send("Internal Server Error");
-      } else {
-          console.log("Database update successful");  
-          res.send(result);
-          console.log(response, questionid)
-      }
-  })
-})
+    if (err) {
+      console.error("Database error:", err);
+      res.status(500).send("Internal Server Error");
+    } else {
+      console.log("Database update successful");
+      res.send(result);
+      console.log(response, questionid);
+    }
+  });
+});
 
 app.listen(port, () => console.log(`port${port}`));
