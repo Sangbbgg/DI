@@ -8,9 +8,18 @@ import Practice from "../Compornents/CarbonFootprints/Practice";
 function CarbonFootprint() {
   const [data, setData] = useState(null); // 전체 데이터 담을 공간
   const [loading, setLoading] = useState(true); // 데이터 로딩 확인
+  const [activeTab, setActiveTab] = useState("consumption"); // 탭 핸들링
+  const [consumptionData, setConsumptionData] = useState({
+    electricity: "",
+    gas: "",
+    water: "",
+    transportation: "",
+    radioOption: "0",
+    waste: "",
+    kg: "",
+    l: "",
+  });
 
-  // 탭 핸들링
-  const [activeTab, setActiveTab] = useState("consumption");
   // 계산 결과
   const [resultData, setResultData] = useState(null);
 
@@ -40,16 +49,17 @@ function CarbonFootprint() {
   }
 
   const handleTabChange = (tabName) => {
-    setActiveTab(tabName);
-    // if ((tabName === "result" || tabName === "practice") && !resultData) {
-    //   alert("제출하기 완료하신 후에 결과확인하실 수 있습니다.");
-    // } else {
-    //   setActiveTab(tabName);
-    // }
+    // setActiveTab(tabName);
+    if ((tabName === "result" || tabName === "practice") && !resultData) {
+      alert("제출하기 완료하신 후에 결과확인하실 수 있습니다.");
+    } else {
+      setActiveTab(tabName);
+    }
   };
 
-  const handleResultSubmit = (resultData) => {
+  const handleResultSubmit = (resultData, inputData) => {
     setResultData(resultData);
+    setConsumptionData(inputData);
     setActiveTab("result");
   };
 
@@ -57,14 +67,24 @@ function CarbonFootprint() {
     switch (activeTab) {
       case "consumption":
         return (
-          <Consumption data={data} onhandleResultSubmit={handleResultSubmit} />
+          <Consumption
+            data={data}
+            inputData={consumptionData}
+            onResultSubmit={handleResultSubmit}
+          />
         );
       case "result":
         return <Result resultData={resultData} />;
       case "practice":
         return <Practice />;
       default:
-        return <Consumption />;
+        return (
+          <Consumption
+            data={data}
+            inputData={consumptionData}
+            onResultSubmit={handleResultSubmit}
+          />
+        );
     }
   };
 
