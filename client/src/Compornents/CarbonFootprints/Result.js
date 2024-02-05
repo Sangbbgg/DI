@@ -10,7 +10,7 @@ import {
 } from "recharts";
 
 function Result({ resultData }) {
-
+  console.log("계산결과 : ",resultData)
   // 객체를 배열로 변환
   const resultData2 = Object.entries(resultData)
     .filter(([key]) => key !== "total") // "total" 키는 제외

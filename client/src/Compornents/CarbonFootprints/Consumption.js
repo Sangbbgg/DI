@@ -126,7 +126,7 @@ function Consumption({ data, inputData, onResultSubmit }) {
   // 교통 부분의 라디오 버튼 변경 핸들러
   const handleTransportChange = (e) => {
     const { value } = e.target;
-    if (value === "3") {
+    if (value === transportationOptions.length.toString()) {
       // 추가 옵션 선택 시
       // 기본값 설정 또는 특별한 처리
       setConsumption({ ...consumption, radioOption: value, transportation: "0" }); // 예시: "0"으로 설정
