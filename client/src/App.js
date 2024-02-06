@@ -37,7 +37,7 @@ function App() {
           {/* 김민호 */}
           {/* 전윤호 */}
         </Routes>
-        <Footer />
+        {/* <Footer /> */}
       </div>
     </Router>
   );

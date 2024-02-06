@@ -19,7 +19,7 @@ function CarbonFootprint() {
     kg: "",
     l: "",
   });
-
+  
   // 계산 결과
   const [resultData, setResultData] = useState(null);
 
@@ -27,9 +27,7 @@ function CarbonFootprint() {
     // 서버 데이터 요청
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:8000/api/carbonFootprint"
-        );
+        const response = await fetch("http://localhost:8000/api/carbonFootprint");
         if (!response.ok) {
           throw new Error("Failed to fetch data");
         }
@@ -74,22 +72,16 @@ function CarbonFootprint() {
           />
         );
       case "result":
-        return <Result resultData={resultData} />;
+        return <Result resultData={resultData} calculationAdviceData={data.calculationAdviceData} />;
       case "practice":
         return <Practice />;
       default:
-        return (
-          <Consumption
-            data={data}
-            inputData={consumptionData}
-            onResultSubmit={handleResultSubmit}
-          />
-        );
+        return <Consumption data={data} inputData={consumptionData} onResultSubmit={handleResultSubmit} />;
     }
   };
 
   return (
-    <div>
+    <div style={{ width: 600, margin: "0 auto" }}>
       <ul>
         <li onClick={() => handleTabChange("consumption")}>계산하기</li>
         <li onClick={() => handleTabChange("result")}>결과보기</li>

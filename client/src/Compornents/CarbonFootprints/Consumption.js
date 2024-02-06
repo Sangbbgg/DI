@@ -5,14 +5,14 @@ function Consumption({ data, inputData, onResultSubmit }) {
   // --------------------------------------------------------------------------------------
   // 개발용 data
   const mockData = {
-    electricity: 7,
-    gas: 7,
-    water: 7,
-    transportation: 7,
-    radioOption: 7, //0~3사이 4가지
-    waste: 7, //kg, l 값중 어디에라도 입력된 값이 여기에 같이 입력된다.
+    electricity: 10,
+    gas: 11,
+    water: 111,
+    transportation: 111,
+    radioOption: 2, //0~3사이 4가지
+    waste: 111, //kg, l 값중 어디에라도 입력된 값이 여기에 같이 입력된다.
     kg: "",
-    l: 7,
+    l: 111,
   };
 
   useEffect(() => {
