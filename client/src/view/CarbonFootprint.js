@@ -68,7 +68,7 @@ function CarbonFootprint() {
       case "consumption":
         return (
           <Consumption
-            data={data}
+            data={data.carbonFootprintData}
             inputData={consumptionData}
             onResultSubmit={handleResultSubmit}
           />

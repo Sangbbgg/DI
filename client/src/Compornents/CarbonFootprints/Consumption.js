@@ -18,7 +18,8 @@ function Consumption({ data, inputData, onResultSubmit }) {
   useEffect(() => {
     const log = () => {
       // console.log("입력 데이터 : ", consumption); //입력데이터 확인
-      // console.log("계산결과 데이터 : ", co2Emission); //결과 저장 확인
+      console.log("계산결과 데이터 : ", co2Emission); //결과 저장 확인
+      console.log("계산결과 데이터 : ", Object.values(co2Emission)); //결과 저장 확인
     };
     log();
   }, [consumption]);
@@ -113,6 +114,14 @@ function Consumption({ data, inputData, onResultSubmit }) {
   // Result Data전달
   const handleSubmit = () => {
     // CO2 배출량 계산 로직
+    const hasValidEmission = Object.values(co2Emission).some((value) => value !== "0.0");
+
+    if (!hasValidEmission) {
+      // 모든 값이 0이거나 co2Emission 값이 없는 경우
+      alert("모든 사용량을 입력해 주세요");
+      return; // 함수 실행을 여기서 중단
+    }
+
     const resultData = co2Emission; // 계산된 결과 데이터
     onResultSubmit(resultData, consumption);
   };
@@ -129,9 +138,17 @@ function Consumption({ data, inputData, onResultSubmit }) {
     if (value === transportationOptions.length.toString()) {
       // 추가 옵션 선택 시
       // 기본값 설정 또는 특별한 처리
-      setConsumption({ ...consumption, radioOption: value, transportation: "0" }); // 예시: "0"으로 설정
+      setConsumption({
+        ...consumption,
+        radioOption: value,
+        transportation: "0",
+      }); // 예시: "0"으로 설정
     } else {
-      setConsumption({ ...consumption, radioOption: value, transportation: "" }); // 라디오 버튼 선택 시 입력 필드 초기화
+      setConsumption({
+        ...consumption,
+        radioOption: value,
+        transportation: "",
+      }); // 라디오 버튼 선택 시 입력 필드 초기화
     }
   };
 
