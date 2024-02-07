@@ -6,9 +6,7 @@ import Footer from "./Compornents/Footer";
 import CarbonFootprint from "./view/CarbonFootprint";
 
 // 이기현(임시) ------------------
-// import Cart from "./component/Cart"; // 이기현_장바구니 컴포넌트
 import Cart from "./view/Cart"; // 이기현_장바구니 컴포넌트
-// import Ordersheet from "./component/Ordersheet"; // 이기현_오더시트 컴포넌트
 import Ordersheet from "./view/Ordersheet"; // 이기현_오더시트 컴포넌트
 //-------------------------
 

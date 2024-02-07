@@ -52,6 +52,15 @@ app.get("/", (req, res) => res.send(`Hell'o World!`));
 app.use("/api/carbonFootprint", carbonFootprintRouter);
 // 이기현 -------------------------------
 
+// 배포 준비시 사용 예정  ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+// dotenv 환경설정
+// dotenv.config();
+
+// const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
+// ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+const base = "https://api-m.sandbox.paypal.com"; // 페이팔 api 주소
+
 // orders 테이블이 존재하지 않을 경우 생성 쿼리문
 const createOrdersTableQuery = `CREATE TABLE IF NOT EXISTS orders (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -76,6 +85,147 @@ const createOrdersTableQuery = `CREATE TABLE IF NOT EXISTS orders (
 )`;
 
 connection.query(createOrdersTableQuery); // orders 테이블 생성
+
+// 여기서부터 Paypal API 채용 코드  ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+// 현재는 PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET 데이터 값이 없어 오류가 나므로 모두 주석처리
+// paypal API 인증 토큰 발급
+// const generateAccessToken = async () => {
+//   try {
+//     if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
+//       throw new Error("MISSING_API_CREDENTIALS");
+//     }
+
+//     // 인증키 암호화
+//     const auth = Buffer.from(
+//       PAYPAL_CLIENT_ID + ":" + PAYPAL_CLIENT_SECRET
+//     ).toString("base64");
+
+//     // paypal 서버에 데이터 전송 및 응답
+//     const response = await fetch(`${base}/v1/oauth2/token`, {
+//       method: "POST",
+//       body: "grant_type=client_credentials",
+//       headers: {
+//         Authorization: `Basic ${auth}`,
+//       },
+//     });
+
+//     const data = await response.json();
+//     return data.access_token;
+//   } catch (error) {
+//     console.error("Failed to generate Access Token:", error);
+//   }
+// };
+
+// /**
+//  * Create an order to start the transaction.
+//  * @see https://developer.paypal.com/docs/api/orders/v2/#orders_create
+//  */
+// const createOrder = async (cart) => {
+//   // use the cart information passed from the front-end to calculate the purchase unit details
+//   console.log(
+//     "shopping cart information passed from the frontend createOrder() callback:",
+//     cart
+//   );
+
+//   let sumAmount = 0;
+//   const accessToken = await generateAccessToken(); // accessToken 발급받기
+//   const url = `${base}/v2/checkout/orders`;
+
+//   cart.map((item) => (sumAmount += item.price * item.count));
+//   sumAmount = Math.ceil(sumAmount / 1332.7); // 1332.7 달러환율을 의미
+
+//   // paypal 청구서 정보
+//   const payload = {
+//     intent: "CAPTURE",
+//     purchase_units: [
+//       {
+//         amount: {
+//           currency_code: "USD",
+//           value: sumAmount,
+//         },
+//       },
+//     ],
+//   };
+
+//   // paypal 서버에 청구서 동봉하여 데이터 전송 및 응답
+//   const response = await fetch(url, {
+//     headers: {
+//       "Content-Type": "application/json",
+//       Authorization: `Bearer ${accessToken}`,
+//       // Uncomment one of these to force an error for negative testing (in sandbox mode only). Documentation:
+//       // https://developer.paypal.com/tools/sandbox/negative-testing/request-headers/
+//       // "PayPal-Mock-Response": '{"mock_application_codes": "MISSING_REQUIRED_PARAMETER"}'
+//       // "PayPal-Mock-Response": '{"mock_application_codes": "PERMISSION_DENIED"}'
+//       // "PayPal-Mock-Response": '{"mock_application_codes": "INTERNAL_SERVER_ERROR"}'
+//     },
+//     method: "POST",
+//     body: JSON.stringify(payload),
+//   });
+
+//   return handleResponse(response);
+// };
+
+// /**
+//  * Capture payment for the created order to complete the transaction.
+//  * @see https://developer.paypal.com/docs/api/orders/v2/#orders_capture
+//  */
+// const captureOrder = async (orderID) => {
+//   const accessToken = await generateAccessToken();
+//   const url = `${base}/v2/checkout/orders/${orderID}/capture`;
+
+//   const response = await fetch(url, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//       Authorization: `Bearer ${accessToken}`,
+//       // Uncomment one of these to force an error for negative testing (in sandbox mode only). Documentation:
+//       // https://developer.paypal.com/tools/sandbox/negative-testing/request-headers/
+//       // "PayPal-Mock-Response": '{"mock_application_codes": "INSTRUMENT_DECLINED"}'
+//       // "PayPal-Mock-Response": '{"mock_application_codes": "TRANSACTION_REFUSED"}'
+//       // "PayPal-Mock-Response": '{"mock_application_codes": "INTERNAL_SERVER_ERROR"}'
+//     },
+//   });
+
+//   return handleResponse(response);
+// };
+
+// // 응답받은 데이터를 json() 변환
+// async function handleResponse(response) {
+//   try {
+//     const jsonResponse = await response.json();
+//     return {
+//       jsonResponse,
+//       httpStatusCode: response.status,
+//     };
+//   } catch (err) {
+//     const errorMessage = await response.text();
+//     throw new Error(errorMessage);
+//   }
+// }
+
+// server.post("/orders", async (req, res) => {
+//   try {
+//     // use the cart information passed from the front-end to calculate the order amount detals
+//     const { cart } = req.body;
+//     const { jsonResponse, httpStatusCode } = await createOrder(cart);
+//     res.status(httpStatusCode).json(jsonResponse);
+//   } catch (error) {
+//     console.error("Failed to create order:", error);
+//     res.status(500).json({ error: "Failed to create order." });
+//   }
+// });
+
+// server.post("/orders/:orderID/capture", async (req, res) => {
+//   try {
+//     const { orderID } = req.params;
+//     const { jsonResponse, httpStatusCode } = await captureOrder(orderID);
+//     res.status(httpStatusCode).json(jsonResponse);
+//   } catch (error) {
+//     console.error("Failed to create order:", error);
+//     res.status(500).json({ error: "Failed to capture order." });
+//   }
+// });
+// ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
 // DB order 테이블에 사용자의 주문서 등록
 app.post("/reqOrder", async (req, res, next) => {

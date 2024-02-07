@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 
 import LocalCartList from "./LocalCartList";
 
-// import "./Cart.css";
+import "../Styles/Cart.css";
 
 // 아래는 취합하는 과정에서 필요할지도 모를 코드를 주석처리 한 것입니다.
 
@@ -99,7 +99,7 @@ const Cart = () => {
     setCartReset(0);
     resetAllCheckboxes();
     // 로컬 스토리지의 데이터를 json 파일로 가져온다
-    const carts = JSON.parse(localStorage.getItem("cart"));
+    const carts = JSON.parse(localStorage.getItem("baskets"));
     setCartList(carts);
   }, [cartReset]);
 
@@ -133,7 +133,7 @@ const Cart = () => {
       const filterItem = cartList.filter((item) => item.isCheck == false);
 
       // 로컬 스토리지 갱신
-      localStorage.setItem("cart", JSON.stringify(filterItem));
+      localStorage.setItem("baskets", JSON.stringify(filterItem));
       setCartReset(1); // 페이지 리렌더링 유도(useEffect 재가동)
     }
   };
@@ -183,13 +183,15 @@ const Cart = () => {
     // 없다면 undefined으로 값을 반환된다.
     const checkItem = cartList.find((item) => item.isCheck == true);
 
-    if (checkItem === undefined) alert("선택한 항목이 없습니다.");
-    else {
+    if (checkItem === undefined) {
+      alert("선택한 항목이 없습니다.");
+      sessionStorage.setItem("selectCart", JSON.stringify([]));
+    } else {
       // cartList 배열의 요소 하나씩 순회하면서 item.isCheck == true,
       // 즉 체크된 요소만을  filterItem에 반환한다(담는다).
       const filterItem = cartList.filter((item) => item.isCheck == true);
       // "selectCart" 라는 별개의 로컬 스토리지 생성한 후 담는다.
-      localStorage.setItem("selectCart", JSON.stringify(filterItem));
+      sessionStorage.setItem("selectCart", JSON.stringify(filterItem));
     }
   };
 
