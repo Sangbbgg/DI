@@ -19,7 +19,7 @@ function CarbonFootprint() {
     kg: "",
     l: "",
   });
-  
+  // console.log(data[0].username)
   console.log("세션:",sessionStorage.loggedIn)
   // 계산 결과
   const [resultData, setResultData] = useState(null);
