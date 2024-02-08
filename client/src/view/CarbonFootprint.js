@@ -20,6 +20,7 @@ function CarbonFootprint() {
     l: "",
   });
   
+  console.log("세션:",sessionStorage.loggedIn)
   // 계산 결과
   const [resultData, setResultData] = useState(null);
 

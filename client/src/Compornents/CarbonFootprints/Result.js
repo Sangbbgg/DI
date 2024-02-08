@@ -78,13 +78,34 @@ function Result({ resultData, calculationAdviceData }) {
   const data = convertDataToObject(resultData);
   console.log(data);
 
+  console.log("토탈 : ", resultData.total);
+  console.log("resultData : ", resultData);
+  console.log("moclData1 : ", moclData1);
+
+  // 탄소계산기 다시하기 이벤트 핸들러
+  const onClickCarbonFootprint = () => {
+    // confirm 대화상자를 표시하고 사용자의 응답을 변수에 저장
+    const userConfirmed = window.confirm("작성된 데이터가 초기화 됩니다. 계속하시겠습니까?");
+
+    // 사용자가 '확인'을 클릭했을 때의 로직
+    if (userConfirmed) {
+      // 첫 페이지로 리플레시하는 로직
+      // navigate 함수 대신 window.location을 사용하여 페이지를 리플레시
+      window.location.href = "/carbonfootprint";
+    }
+    // 사용자가 '취소'를 클릭했을 때는 아무것도 하지 않음
+  };
+
+  
   return (
     <div>
       <section className="household_two_step">
         <p>결과 페이지</p>
       </section>
       <div>
-        <p>사용량 분석</p>
+        <div>
+          <p>사용량 분석</p>
+        </div>
         <div style={{ width: "100%", height: 400 }}>
           <ChartForm data={data} />
           <div>
@@ -94,9 +115,11 @@ function Result({ resultData, calculationAdviceData }) {
                 <p>{"user이름"}님의 이산화탄소(CO₂) 발생량 통계입니다.</p>
               </div>
               <p>
-                {"user이름"} 가정은 이산화탄소 배출량은 총 346.0kg 이며, 비슷한 다른 가정 평균 1.6kg 보다 약 0% 더 많이
-                배출하고 있습니다. 왼쪽의 그래프를 보고 어느 부분에서 이산화탄소를 많이 발생하고 있는지 비교해 보세요.
+                {"user이름"} 가정은 이산화탄소 배출량은 총 {resultData.total}kg 이며, 비슷한 다른 가정 평균 {moclData1.total}kg 보다 약 {((resultData.total / moclData1.total) * 100 - 100).toFixed(1)}%
+                더 많이 배출하고 있습니다. 아래의 그래프를 보고 어느 부분에서 이산화탄소를 많이 발생하고 있는지 비교해 보세요.
               </p>
+              <button onClick={onClickCarbonFootprint}>탄소계산기 다시하기</button>
+              <button>저장</button>
             </div>
           </div>
         </div>

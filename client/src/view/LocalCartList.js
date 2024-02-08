@@ -94,15 +94,15 @@ const LocalCartList = ({ cartList, setCartReset, cartListUpdate }) => {
   // 모든 상품들에 대한 배송비를 구하는 메소드
   // 아래 선택한 상품에 대한 배송비를 구하는 메소드와 합칠 수 있으나 귀찮아서 skip
   const allDeliveryFee = () => {
-    const totalAmount = totalAmount();
-    if (totalAmount > deliveryFeeFreeAmount) return 0;
+    const getTotalAmount = totalAmount();
+    if (getTotalAmount > deliveryFeeFreeAmount) return 0;
     else return 3000;
   };
 
   // 선택한 상품들에 대한 배송비를 구하는 메소드
   const selectDeliveryFee = () => {
-    const totalAmount = selectTotalAmount();
-    if (totalAmount > deliveryFeeFreeAmount) return 0;
+    const getTotalAmount = selectTotalAmount();
+    if (getTotalAmount > deliveryFeeFreeAmount) return 0;
     else return 3000;
   };
 

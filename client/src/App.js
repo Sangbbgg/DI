@@ -4,7 +4,10 @@ import Main from "./Compornents/Main";
 import Header from "./Compornents/Header";
 import Footer from "./Compornents/Footer";
 import CarbonFootprint from "./view/CarbonFootprint";
-
+// 김민호(임시)-----------------
+import LoginPage from "./Compornents/Logins/Login";
+import Regester from "./Compornents/Logins/Regester";
+// ---------------------------
 // 이기현(임시) ------------------
 import Cart from "./view/Cart"; // 이기현_장바구니 컴포넌트
 import Ordersheet from "./view/Ordersheet"; // 이기현_오더시트 컴포넌트
@@ -33,6 +36,8 @@ function App() {
           {/* "/" 주문서 작성 페이지 라우팅 */}
           {/* 이주호 */}
           {/* 김민호 */}
+          <Route path='/Login'element={<LoginPage/>}></Route>
+          <Route path='/Regester'element={<Regester/>}></Route>
           {/* 전윤호 */}
         </Routes>
         {/* <Footer /> */}
