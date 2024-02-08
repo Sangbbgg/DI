@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useNavigate } from "react"; //useNavigate 추가
 
 import Modal from "react-modal"; // 팝업 라이브러리
 
