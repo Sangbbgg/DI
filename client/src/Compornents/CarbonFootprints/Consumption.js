@@ -66,7 +66,7 @@ function Consumption({ data, inputData, onResultSubmit }) {
     // const handleData = mockData;
     // 실제 데이터
     const handleData = consumption;
-
+    
     const getCostFormula = (costObj, key) => Object.values(costObj)[key] ?? "0";
 
     const electricityCost = transformCostFormula(data, "electricity");
