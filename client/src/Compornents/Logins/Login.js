@@ -13,7 +13,7 @@ function LoginPage() {
     console.log('LoginPageJs 함수 호출됨');
   
     // 로그인 요청 구현
-    axios.post('http://localhost:5005/login', {
+    axios.post('http://localhost:8000/login', {
       email: email,
       password: password,
     })
