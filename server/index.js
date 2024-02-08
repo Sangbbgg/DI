@@ -60,7 +60,7 @@ const connection = mysql.createConnection({
 });
 
 // 프로미스 기반 MySQL 연결 설정
-const PromiseConnection = mysql.createConnection({
+const PromiseConnection = mysqlPromise.createPool({
   // host: "127.0.0.1",
   // user: "root",
   // password: "1234",
