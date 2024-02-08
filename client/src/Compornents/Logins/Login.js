@@ -7,7 +7,7 @@ function LoginPage() {
   const [email, setemail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const [setloginStatus]= useState('');
+  const [loginStatus,setloginStatus]= useState('');
 
   const LoginPageJs = () => {
     console.log('LoginPageJs 함수 호출됨');
@@ -53,12 +53,14 @@ function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
           />
           <br />
-          <button className="Btn" onClick={(e) => { e.preventDefault(); console.log('버튼 클릭됨'); LoginPageJs() ; }}>
+          <button className="Btn" onClick={(e) => 
+            { e.preventDefault(); console.log('버튼 클릭됨'); LoginPageJs() ; }}>
             로그인
           </button>
           <div>
             <Link to="/Regester">회원가입 필요하십니까?</Link>
           </div>
+          {loginStatus && <div>{loginStatus}</div>}
         </form>
       </div>
     </div>
