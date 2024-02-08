@@ -160,7 +160,7 @@ const Ordersheet = () => {
         totalAmount: totalProductAmount() - deliveryFee() - usePoint,
         payment: paymentType,
         usePoint: usePoint,
-        imageURL,
+        // imageURL,
       });
     });
 
@@ -207,7 +207,7 @@ const Ordersheet = () => {
               <input
                 type="button"
                 value={"주문자 정보 가져오기"}
-                onClick={onClickLoadRecipient}
+                // onClick={onClickLoadRecipient}
               />
               <p></p>
               <label for="full_name">수령인 이름: </label>
@@ -298,12 +298,12 @@ const Ordersheet = () => {
               <input
                 type="number"
                 value={usePoint}
-                onChange={onChangeUsePoint}
+                // onChange={onChangeUsePoint}
               />{" "}
               원{"  "}
               <input
                 type="button"
-                onClick={onClcikAllUsePoint}
+                // onClick={onClcikAllUsePoint}
                 value={"전액 사용"}
               />
               <hr></hr>
