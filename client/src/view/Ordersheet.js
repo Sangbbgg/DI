@@ -47,16 +47,16 @@ const Ordersheet = () => {
       const getUserData = JSON.parse(localStorage.getItem("user"));
       const { id } = { ...getUserData[0] };
 
-      axios
-        .get("http://localhost:8000/ordersheet", { params: { userId: id } })
-        .then((data) => setUserInfo(data.data[0]));
+      // 사용자의 기본 정보를 불러오는 부분, 로그인 구현 후 추후 검토 필요
+      // axios
+      //   .get("http://localhost:8000/ordersheet", { params: { userId: id } })
+      //   .then((data) => setUserInfo(data.data[0]));
 
       switch (orderType) {
         case "single_order":
           return setUserCart([orderTypeData]);
         case "select_order": {
           const cartProducts = JSON.parse(sessionStorage.getItem("selectCart"));
-          sessionStorage.removeItem("selectCart");
           return setUserCart(cartProducts);
         }
         case "all_order": {
@@ -80,25 +80,25 @@ const Ordersheet = () => {
   };
 
   // "주문자 정보 가져오기" 버튼 핸들러, 각 상태에 사용자 정보를 저장하고 갱신함.
-  const onClickLoadRecipient = () => {
-    setNameInfo(userInfo.name);
-    setPhoneNumberInfo(userInfo.phoneNumber);
-    setAddressInfo(userInfo.address);
-  };
+  // const onClickLoadRecipient = () => {
+  //   setNameInfo(userInfo.name);
+  //   setPhoneNumberInfo(userInfo.phoneNumber);
+  //   setAddressInfo(userInfo.address);
+  // };
 
   // 포인트 사용량 핸들러
-  const onChangeUsePoint = (e) => {
-    // 입력된 값이 보유한 포인트에 비해 많을 경우 경고창을 호출하며, 0으로 초기화한다.
-    if (e.target.value > userInfo.point) {
-      alert("보유 금액 이상 사용은 불가능 합니다.");
-      setUsePoint(0);
-    } else setUsePoint(e.target.value);
-  };
+  // const onChangeUsePoint = (e) => {
+  //   // 입력된 값이 보유한 포인트에 비해 많을 경우 경고창을 호출하며, 0으로 초기화한다.
+  //   if (e.target.value > userInfo.point) {
+  //     alert("보유 금액 이상 사용은 불가능 합니다.");
+  //     setUsePoint(0);
+  //   } else setUsePoint(e.target.value);
+  // };
 
   // "전액 사용" 버튼 핸들러
-  const onClcikAllUsePoint = () => {
-    setUsePoint(userInfo.point);
-  };
+  // const onClcikAllUsePoint = () => {
+  //   setUsePoint(userInfo.point);
+  // };
 
   // 배송비 산출 메소드
   const deliveryFee = () => {
@@ -130,7 +130,7 @@ const Ordersheet = () => {
 
     // createOrderNumber에는 주문번호를 생성한다.
     const createOrderNumber =
-      String(userInfo.id) +
+      // String(userInfo.id) + 로그인 정보 필요
       String(date.getFullYear()) +
       String(date.getMonth() + 1) +
       String(date.getDate()) +
@@ -150,7 +150,8 @@ const Ordersheet = () => {
       reqOrderSheet.push({
         ...data,
         orderNumber: createOrderNumber,
-        userId: userInfo.id,
+        // userId: userInfo.id,  로그인 정보 필요
+        productCode: data.id,
         name: nameInfo,
         addr: addressInfo,
         phoneNumber: phoneNumberInfo,
@@ -159,6 +160,7 @@ const Ordersheet = () => {
         totalAmount: totalProductAmount() - deliveryFee() - usePoint,
         payment: paymentType,
         usePoint: usePoint,
+        imageURL,
       });
     });
 
@@ -187,6 +189,7 @@ const Ordersheet = () => {
         // 필터링된 요소들을 다시 "baskets" 로컬 스토리지에 재저장한다.
         localStorage.setItem("baskets", JSON.stringify(updateCartList));
         alert("주문이 완료되었습니다.");
+        sessionStorage.removeItem("selectCart");
         navigate("/shop");
       });
   };

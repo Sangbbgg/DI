@@ -1,7 +1,23 @@
 const express = require("express");
 const cors = require("cors");
 const mysql = require("mysql2");
-const bcrypt = require('bcrypt');
+const mysqlPromise = require("mysql2/promise");
+const bcrypt = require("bcrypt");
+
+// 이기현_추가 코드 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+// chatGPT 설명
+// mysql2/promise:
+// 프로미스 기반의 API를 사용합니다.
+// 쿼리를 수행한 결과가 프로미스로 반환되어 .then() 및 .catch()를 사용하여 처리할 수 있습니다.
+
+// 저는 "mysql2/promise" 모듈을 사용하였기에 코드를 취합하는 과정에서 문제가 발생합니다.
+// 그러므로 다른 변수 이름(mysqlPromise)으로 해당 모듈을 사용해서,
+// MySQL 연결을 추가 설정함으로써 문제를 해결하였습니다.
+
+// 밑에 MySQL 연결 설정 문단에서 주석을 확인해주십시오.
+
+// ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
 const app = express();
 const port = 8000;
@@ -16,8 +32,35 @@ app.use(bodyParser.json());
 // CORS 설정
 app.use(cors({ origin: "http://localhost:3000" }));
 
+// 이기현_추가 주석 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+// 현재 MySQL 연결 설정이 각각 connection, PromiseConnection 이름으로 되어있습니다,
+// chatGPT 의 답변에 따르면, 현재의 코드는 문제가 없다고 하며,
+// 실제로 목 데이터를 넣고 사용한 결과, 별다른 문제점은 발견되지 않았습니다.
+// const mysql = require("mysql2") 기반으로 모듈을 사용한 분은 connection 사용하시고,
+// 저처럼 require("mysql2/promise") 기반으로 모듈을 사용한 분은 PromiseConnection 을
+// 사용하시기 바랍니다.
+
+// 문제가 발생할 경우 제게도 알려주세요!
+
+// ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
 // MySQL 연결 설정
 const connection = mysql.createConnection({
+  // host: "127.0.0.1",
+  // user: "root",
+  // password: "1234",
+  // database: "ezteam2",
+  // 외부 데이터 베이스 MySQL
+  host: "1.243.246.15",
+  user: "root",
+  password: "1234",
+  database: "ezteam2",
+  port: 5005,
+});
+
+// 프로미스 기반 MySQL 연결 설정
+const PromiseConnection = mysql.createConnection({
   // host: "127.0.0.1",
   // user: "root",
   // password: "1234",
@@ -204,7 +247,7 @@ connection.query(createOrdersTableQuery); // orders 테이블 생성
 //   }
 // }
 
-// server.post("/orders", async (req, res) => {
+// app.post("/orders", async (req, res) => {
 //   try {
 //     // use the cart information passed from the front-end to calculate the order amount detals
 //     const { cart } = req.body;
@@ -216,7 +259,7 @@ connection.query(createOrdersTableQuery); // orders 테이블 생성
 //   }
 // });
 
-// server.post("/orders/:orderID/capture", async (req, res) => {
+// app.post("/orders/:orderID/capture", async (req, res) => {
 //   try {
 //     const { orderID } = req.params;
 //     const { jsonResponse, httpStatusCode } = await captureOrder(orderID);
@@ -232,6 +275,8 @@ connection.query(createOrdersTableQuery); // orders 테이블 생성
 app.post("/reqOrder", async (req, res, next) => {
   try {
     const { orderSheet } = req.body;
+    const query =
+      "INSERT INTO orders (orderNumber, userId, productCode, name, addr, phoneNumber, reqMessage, count, totalCount, totalAmount, payment, usePoint,imageURL) VALUES (?)";
 
     orderSheet.map(async (article) => {
       console.log(article);
@@ -251,10 +296,7 @@ app.post("/reqOrder", async (req, res, next) => {
         article.imageURL,
       ];
 
-      await db.query(
-        "INSERT INTO orders (orderNumber, userId, productCode, name, addr, phoneNumber, reqMessage, count, totalCount, totalAmount, payment, usePoint,imageURL) VALUES (?)",
-        [data]
-      );
+      await PromiseConnection.query(query, [data]);
     });
 
     return res.redirect("/");
@@ -268,7 +310,7 @@ app.post("/reqOrder", async (req, res, next) => {
 app.get("/ordersheet", async (req, res, next) => {
   try {
     const { userId } = req.query;
-    const [userData] = await db.query(
+    const [userData] = await PromiseConnection.query(
       "SELECT id, name, phoneNumber, address, point FROM user WHERE id = ?",
       [userId]
     );
@@ -283,7 +325,7 @@ app.get("/ordersheet", async (req, res, next) => {
 
 // 김민호 -------------------------------
 //-------------------------------로그인-----------------------------------------------
-app.post('/login', async (req, res) => {
+app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -293,15 +335,21 @@ app.post('/login', async (req, res) => {
       [email],
       async (err, result) => {
         if (err) {
-          console.error('서버에서 에러 발생:', err);
+          console.error("서버에서 에러 발생:", err);
           res.status(500).send({ success: false, message: "서버 에러 발생" });
         } else {
           if (result.length > 0) {
-            const isPasswordMatch = await bcrypt.compare(password, result[0].password);
+            const isPasswordMatch = await bcrypt.compare(
+              password,
+              result[0].password
+            );
             if (isPasswordMatch) {
               res.send({ success: true, message: "로그인 성공", data: result });
             } else {
-              res.send({ success: false, message: "비밀번호가 일치하지 않습니다." });
+              res.send({
+                success: false,
+                message: "비밀번호가 일치하지 않습니다.",
+              });
             }
           } else {
             res.send({ success: false, message: "유저 정보가 없습니다." });
@@ -310,43 +358,76 @@ app.post('/login', async (req, res) => {
       }
     );
   } catch (error) {
-    console.error('비밀번호 비교 중 오류:', error);
+    console.error("비밀번호 비교 중 오류:", error);
     res.status(500).send({ success: false, message: "서버 에러 발생" });
   }
 });
 //-------------------------------회원가입----------------------------------------------
-app.post('/regester', async (req, res) => {
-  const { username, password, email, address, Detailedaddress, phoneNumber, usertype } = req.body;
+app.post("/regester", async (req, res) => {
+  const {
+    username,
+    password,
+    email,
+    address,
+    Detailedaddress,
+    phoneNumber,
+    usertype,
+  } = req.body;
 
   try {
     // 비밀번호를 해시화
     const hashedPassword = await bcrypt.hash(password, 10);
-    
+
     // 회원번호 생성 (6자리)
     const userNumber = await generateUserNumber();
 
     // 회원번호 생성 (1,2,3 중 하나)
     const userTypeNumber = {
-      'personal': 1,  // 개인
-      'business': 2,  // 기업
-      'organization': 3  // 단체
+      personal: 1, // 개인
+      business: 2, // 기업
+      organization: 3, // 단체
     };
 
     const userType = userTypeNumber[usertype];
 
-    const sql = 
-    'INSERT INTO login (userNumber, username, email, password, address, Detailedaddress, phoneNumber, usertype) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-    connection.query(sql, [userNumber, username, email, hashedPassword, address, Detailedaddress, phoneNumber, usertype], (err, result) => {
-      if (err) {
-        console.error('MySQL에 데이터 삽입 중 오류:', err);
-        return res.status(500).json({ success: false, message: '회원가입 중 오류가 발생했습니다.', error: err.message });
+    const sql =
+      "INSERT INTO login (userNumber, username, email, password, address, Detailedaddress, phoneNumber, usertype) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    connection.query(
+      sql,
+      [
+        userNumber,
+        username,
+        email,
+        hashedPassword,
+        address,
+        Detailedaddress,
+        phoneNumber,
+        usertype,
+      ],
+      (err, result) => {
+        if (err) {
+          console.error("MySQL에 데이터 삽입 중 오류:", err);
+          return res.status(500).json({
+            success: false,
+            message: "회원가입 중 오류가 발생했습니다.",
+            error: err.message,
+          });
+        }
+        console.log("사용자가 성공적으로 등록됨");
+        return res.status(200).json({
+          success: true,
+          message: "사용자가 성공적으로 등록됨",
+          userType,
+        });
       }
-      console.log('사용자가 성공적으로 등록됨');
-      return res.status(200).json({ success: true, message: '사용자가 성공적으로 등록됨', userType });
-    });
+    );
   } catch (error) {
-    console.error('회원가입 중 오류:', error);
-    return res.status(500).json({ success: false, message: '내부 서버 오류', details: error.message });
+    console.error("회원가입 중 오류:", error);
+    return res.status(500).json({
+      success: false,
+      message: "내부 서버 오류",
+      details: error.message,
+    });
   }
 });
 // 전윤호 -------------------------------
