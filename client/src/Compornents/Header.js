@@ -9,13 +9,8 @@ function Header() {
     const storedLoggedIn = sessionStorage.getItem('loggedIn');
     if (storedLoggedIn) {
       setLoggedIn(true);
-<<<<<<< HEAD
     }
   }, [setLoggedIn]);
-=======
-    } 
-  }, [loggedIn]);
->>>>>>> dabaad179b67504a347ff416408d2df0d4940939
 
 
   // 로그아웃 시 세션 스토리지에서 로그인 상태 제거
