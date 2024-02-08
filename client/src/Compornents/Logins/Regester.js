@@ -45,7 +45,7 @@ function Regester() {
     // }
   
 // 클라이언트에서 서버로 회원가입 요청
-axios.post('http://localhost:5005/regester', {
+axios.post('http://localhost:8000/regester', {
   username,
   password,
   email,
