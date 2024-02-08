@@ -9,8 +9,8 @@ function Header() {
     const storedLoggedIn = sessionStorage.getItem('loggedIn');
     if (storedLoggedIn) {
       setLoggedIn(true);
-    }
-  }, []);
+    } 
+  }, [loggedIn]);
 
 
   // 로그아웃 시 세션 스토리지에서 로그인 상태 제거
@@ -32,14 +32,12 @@ function Header() {
       ) : (
         // 로그아웃 상태일 때 로그인과 회원가입 버튼 표시
         <>
-
           <button className='LoginBtn'>
             <Link to='/Login'>로그인</Link>
           </button>
           <button>
             <Link to='/Regester'>회원가입</Link>
           </button><br/>
-         
         </>
       )}
       </div>
