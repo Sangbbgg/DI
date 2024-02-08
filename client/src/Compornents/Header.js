@@ -10,7 +10,7 @@ function Header() {
     if (storedLoggedIn) {
       setLoggedIn(true);
     }
-  }, []);
+  }, [setLoggedIn]);
 
 
   // 로그아웃 시 세션 스토리지에서 로그인 상태 제거
