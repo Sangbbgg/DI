@@ -282,6 +282,24 @@ app.get("/ordersheet", async (req, res, next) => {
 // 이주호 -------------------------------
 
 // 김민호 -------------------------------
+//-------------------------------개인 회원번호---------------------------------------------
+const usedUserNumbers = new Set(); // 중복 방지를 위한 Set
+
+async function generateUserNumber() {
+  const min = 100000;
+  const max = 199999;
+  let randomUserNumber = Math.floor(Math.random() * (max - min + 1) + min);
+
+  // 중복 체크
+  while (usedUserNumbers.has(randomUserNumber)) {
+    randomUserNumber = Math.floor(Math.random() * (max - min + 1) + min);
+  }
+
+  // 중복이 없으면 Set에 추가
+  usedUserNumbers.add(randomUserNumber);
+
+  return randomUserNumber;
+}
 //-------------------------------로그인-----------------------------------------------
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
