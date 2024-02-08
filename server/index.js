@@ -288,7 +288,7 @@ app.post('/login', async (req, res) => {
 
   try {
     // 이메일을 사용하여 데이터베이스에서 사용자를 찾습니다.
-    db.query(
+    connection.query(
       "SELECT * FROM login WHERE email = ?",
       [email],
       async (err, result) => {
@@ -337,7 +337,7 @@ app.post('/regester', async (req, res) => {
 
     const sql = 
     'INSERT INTO login (userNumber, username, email, password, address, Detailedaddress, phoneNumber, usertype) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-    db.query(sql, [userNumber, username, email, hashedPassword, address, Detailedaddress, phoneNumber, usertype], (err, result) => {
+    connection.query(sql, [userNumber, username, email, hashedPassword, address, Detailedaddress, phoneNumber, usertype], (err, result) => {
       if (err) {
         console.error('MySQL에 데이터 삽입 중 오류:', err);
         return res.status(500).json({ success: false, message: '회원가입 중 오류가 발생했습니다.', error: err.message });
