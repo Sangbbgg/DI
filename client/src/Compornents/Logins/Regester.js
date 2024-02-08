@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
 import DaumPostcode from "react-daum-postcode";
-import { handlePostcode } from "../Handle/Postcodehandle";
+import { handlePostcode } from "./Handle/Postcodehandle";
 import axios from 'axios';
 
 function Regester() {
