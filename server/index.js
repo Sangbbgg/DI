@@ -357,6 +357,7 @@ app.post("/login", async (req, res) => {
           const isPasswordMatch = await bcrypt.compare(password, result[0].password);
           if (isPasswordMatch) {
             res.send({ success: true, message: "로그인 성공", data: result });
+
           } else {
             res.send({
               success: false,

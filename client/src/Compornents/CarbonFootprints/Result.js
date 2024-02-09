@@ -2,7 +2,7 @@ import React from "react";
 import ChartForm from "./Result/chartData";
 import { useNavigate } from "react-router-dom";
 
-function Result({ initialData, resultData }) {
+function Result({ initialData, resultData, userId }) {
   const navigate = useNavigate();
 
   const hasResultData = resultData && resultData.calculation_month;
@@ -11,7 +11,7 @@ function Result({ initialData, resultData }) {
   console.log("추천 실천과제:", initialData);
   console.log("resultData:", resultData);
 
-  const userId = 104716;
+  // const userId = 104716;
 
   const moclData1 = {
     // 평균 데이터

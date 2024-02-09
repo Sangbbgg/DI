@@ -1,47 +1,48 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 function Header() {
   const [loggedIn, setLoggedIn] = useState(false);
-  
+  const navigate = useNavigate();
   // 페이지가 로드될 때 로그인 상태를 확인하고 상태를 업데이트
   useEffect(() => {
-    const storedLoggedIn = sessionStorage.getItem('loggedIn');
+    const storedLoggedIn = sessionStorage.getItem("loggedIn");
     if (storedLoggedIn) {
       setLoggedIn(true);
     }
   }, [setLoggedIn]);
 
-
   // 로그아웃 시 세션 스토리지에서 로그인 상태 제거
   const handleLogout = () => {
-    sessionStorage.removeItem('loggedIn');
+    sessionStorage.removeItem("loggedIn");
+    sessionStorage.removeItem("userId"); //0210 상호형 추가
     setLoggedIn(false);
+    navigate("/"); //0210 상호형 추가
   };
+
   return (
     <div>
-      
       Header입니다.
       {loggedIn ? (
         <>
-          <button className='LoginBtn' onClick={handleLogout}>
+          <button className="LoginBtn" onClick={handleLogout}>
             로그아웃
           </button>
-        
         </>
       ) : (
         // 로그아웃 상태일 때 로그인과 회원가입 버튼 표시
         <>
-          <button className='LoginBtn'>
-            <Link to='/Login'>로그인</Link>
+          <button className="LoginBtn">
+            <Link to="/Login">로그인</Link>
           </button>
           <button>
-            <Link to='/Regester'>회원가입</Link>
-          </button><br/>
+            <Link to="/Regester">회원가입</Link>
+          </button>
+          <br />
         </>
       )}
-      </div>
-  )
+    </div>
+  );
 }
 
-export default Header
+export default Header;
