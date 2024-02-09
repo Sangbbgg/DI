@@ -21,7 +21,9 @@ function LoginPage() {
       console.log('서버 응답:', response);
       if (response.data.success) {
         sessionStorage.setItem('loggedIn', true);
+        sessionStorage.setItem('userId', JSON.stringify(response.data.data[0].userNumber)); // 0210 상호형 추가 세션에 userNumber 
         navigate('/');
+        window.location.reload(); //0210 상호형 추가 페이지를강제로 리로드
       } else {
         // 로그인 실패 시 처리
         console.log('로그인 실패:', response.data);

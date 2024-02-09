@@ -1,31 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 
-function Consumption({ data, inputData, onResultSubmit }) {
-  const [consumption, setConsumption] = useState(inputData);
-  // --------------------------------------------------------------------------------------
-  // 개발용 data
-  const mockData = {
-    electricity: 10,
-    gas: 11,
-    water: 111,
-    transportation: 111,
-    radioOption: 2, //0~3사이 4가지
-    waste: 111, //kg, l 값중 어디에라도 입력된 값이 여기에 같이 입력된다.
-    kg: "",
-    l: 111,
-  };
-
-  useEffect(() => {
-    const log = () => {
-      // console.log("입력 데이터 : ", consumption); //입력데이터 확인
-      console.log("계산결과 데이터 : ", co2Emission); //결과 저장 확인
-      console.log("계산결과 데이터 : ", Object.values(co2Emission)); //결과 저장 확인
-    };
-    log();
-  }, [consumption]);
-  // --------------------------------------------------------------------------------------
-
-  // 계산 결과
+function Consumption({ inputData, initialData, onResultSubmit }) {
+  // console.log("계산공식 :", initialData);
+  const [inputValue, setInputValue] = useState(inputData); // 예시 입력 값
   const [co2Emission, setCo2Emission] = useState({
     electricity: 0,
     gas: 0,
@@ -35,7 +12,60 @@ function Consumption({ data, inputData, onResultSubmit }) {
     total: 0,
   });
 
-  // 데이터 가공
+  // parent_category_id가 4인 데이터 필터링 및 정렬
+  const transportationOptions = initialData.filter((item) => item.parent_category_id === 4).sort((a, b) => a.id - b.id);
+
+  // 교통 부분의 라디오 버튼 변경 핸들러
+  const handleTransportChange = (e) => {
+    const { value } = e.target;
+    if (value === transportationOptions.length.toString()) {
+      // 추가 옵션 선택 시
+      // 기본값 설정 또는 특별한 처리
+      setInputValue({
+        ...inputValue,
+        radioOption: value,
+        transportation: "0",
+      }); // 예시: "0"으로 설정
+    } else {
+      setInputValue({
+        ...inputValue,
+        radioOption: value,
+        transportation: "",
+      }); // 라디오 버튼 선택 시 입력 필드 초기화
+    }
+  };
+
+  // 입력값 변경 핸들러
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setInputValue({ ...inputValue, [name]: value });
+  };
+
+  // Result Data전달
+  const handleSubmit = () => {
+    // `transportation`이 4항목 (예: "추가 옵션") 선택된 경우를 처리합니다.
+    const isTransportationOption = inputValue.radioOption === "3"; // 여기서는 "3"이 4번째 옵션을 의미합니다.
+
+    // `transportation` 제외한 나머지 값들의 유효성 검사
+    const isValidEmissionExcludingTransportation = Object.entries(co2Emission).every(([key, value]) => {
+      if (key === "transportation") {
+        // `transportation`이 4항목 선택된 경우는 유효한 값으로 간주
+        return isTransportationOption || parseFloat(value) > 0;
+      }
+      // 나머지 값들은 0보다 커야 함
+      return parseFloat(value) > 0;
+    });
+
+    // 유효성 검사가 실패하면 얼럿 표시
+    if (!isValidEmissionExcludingTransportation) {
+      alert("모든 사용량을 입력해 주세요");
+      return; // 함수 실행 중단
+    }
+    const resultData = co2Emission; // 계산된 결과 데이터
+    onResultSubmit(resultData, inputValue);
+  };
+
+  // 화면에 처리 할 데이터 가공 함수
   const transformCostFormula = (data, parentCategoryName) => {
     let result = {};
     // 부모 카테고리의 ID 찾기
@@ -62,18 +92,16 @@ function Consumption({ data, inputData, onResultSubmit }) {
 
   // 입력값 계산 로직
   useEffect(() => {
-    // 개발용
-    // const handleData = mockData;
-    // 실제 데이터
-    const handleData = consumption;
-    
+    const handleData = inputValue;
+    console.log(inputValue);
+
     const getCostFormula = (costObj, key) => Object.values(costObj)[key] ?? "0";
 
-    const electricityCost = transformCostFormula(data, "electricity");
-    const gasCost = transformCostFormula(data, "gas");
-    const waterCost = transformCostFormula(data, "water");
-    const transportationCost = transformCostFormula(data, "transportation");
-    const wasteCost = transformCostFormula(data, "waste");
+    const electricityCost = transformCostFormula(initialData, "electricity");
+    const gasCost = transformCostFormula(initialData, "gas");
+    const waterCost = transformCostFormula(initialData, "water");
+    const transportationCost = transformCostFormula(initialData, "transportation");
+    const wasteCost = transformCostFormula(initialData, "waste");
     let transportationEmission = 0;
     let wasteEmission = 0;
 
@@ -109,56 +137,11 @@ function Consumption({ data, inputData, onResultSubmit }) {
       waste: wasteEmission.toFixed(1),
       total: totalEmission.toFixed(1),
     });
-  }, [consumption]);
-
-  // Result Data전달
-  const handleSubmit = () => {
-    // CO2 배출량 계산 로직
-    const hasValidEmission = Object.values(co2Emission).some((value) => value !== "0.0");
-
-    if (!hasValidEmission) {
-      // 모든 값이 0이거나 co2Emission 값이 없는 경우
-      alert("모든 사용량을 입력해 주세요");
-      return; // 함수 실행을 여기서 중단
-    }
-
-    const resultData = co2Emission; // 계산된 결과 데이터
-    onResultSubmit(resultData, consumption);
-  };
-
-  // 입력값 변경 핸들러
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setConsumption({ ...consumption, [name]: value });
-  };
-
-  // 교통 부분의 라디오 버튼 변경 핸들러
-  const handleTransportChange = (e) => {
-    const { value } = e.target;
-    if (value === transportationOptions.length.toString()) {
-      // 추가 옵션 선택 시
-      // 기본값 설정 또는 특별한 처리
-      setConsumption({
-        ...consumption,
-        radioOption: value,
-        transportation: "0",
-      }); // 예시: "0"으로 설정
-    } else {
-      setConsumption({
-        ...consumption,
-        radioOption: value,
-        transportation: "",
-      }); // 라디오 버튼 선택 시 입력 필드 초기화
-    }
-  };
-
-  // parent_category_id가 4인 데이터 필터링 및 정렬
-  const transportationOptions = data.filter((item) => item.parent_category_id === 4).sort((a, b) => a.id - b.id);
+  }, [inputValue]);
 
   return (
     <div>
-      {/* parent_category_id가 null인 항목 렌더링 */}
-      {data
+      {initialData
         .filter((item) => item.parent_category_id === null)
         .map((item) => (
           <div key={item.id}>
@@ -172,13 +155,12 @@ function Consumption({ data, inputData, onResultSubmit }) {
                     type="radio"
                     name="radioOption"
                     value={idx} // ID를 0부터 시작하는 값으로 설정
-                    checked={consumption.radioOption === `${idx}`}
+                    checked={inputValue.radioOption === `${idx}`}
                     onChange={handleTransportChange}
                   />
                   {option.sublabel}
                 </div>
               ))}
-
             {/* 교통 부분 추가 라디오 버튼 */}
             {item.category_name === "transportation" && (
               <div>
@@ -186,7 +168,7 @@ function Consumption({ data, inputData, onResultSubmit }) {
                   type="radio"
                   name="radioOption"
                   value={transportationOptions.length.toString()} // 별도의 라디오 버튼 값
-                  checked={consumption.radioOption === transportationOptions.length.toString()}
+                  checked={inputValue.radioOption === transportationOptions.length.toString()}
                   onChange={handleTransportChange}
                 />
                 추가 옵션
@@ -199,15 +181,15 @@ function Consumption({ data, inputData, onResultSubmit }) {
                 type="number"
                 name={item.category_name}
                 placeholder="숫자 입력..."
-                value={consumption[item.category_name]}
+                value={inputValue[item.category_name]}
                 onChange={handleChange}
-                disabled={item.category_name === "transportation" && consumption.radioOption === "3"} // 네 번째 라디오 버튼 선택 시 비활성화
+                disabled={item.category_name === "transportation" && inputValue.radioOption === "3"} // 네 번째 라디오 버튼 선택 시 비활성화
               />
             )}
 
             {/* 폐기물 관련 입력 필드 구현 */}
             {item.category_name === "waste" &&
-              data
+              initialData
                 .filter((subItem) => subItem.parent_category_id === item.id)
                 .map((subItem) => (
                   <div key={subItem.id}>
@@ -215,16 +197,16 @@ function Consumption({ data, inputData, onResultSubmit }) {
                       type="number"
                       name={subItem.category_name}
                       placeholder={"숫자 입력..."}
-                      value={consumption[subItem.category_name]}
+                      value={inputValue[subItem.category_name]}
                       onChange={(e) => {
                         // 선택된 폐기물 입력값 설정 및 다른 필드 초기화
                         const newConsumption = {
-                          ...consumption,
+                          ...inputValue,
                           kg: subItem.category_name === "kg" ? e.target.value : "",
                           l: subItem.category_name === "l" ? e.target.value : "",
                           [subItem.category_name]: e.target.value,
                         };
-                        setConsumption(newConsumption);
+                        setInputValue(newConsumption);
                       }}
                     />
                     {subItem.unit}
@@ -240,6 +222,15 @@ function Consumption({ data, inputData, onResultSubmit }) {
             />
           </div>
         ))}
+
+      <div>
+        <input
+          type="number"
+          placeholder="total"
+          value={co2Emission.total} // 예시로 입력값을 그대로 출력; 실제 로직에 따라 변경 필요
+          readOnly
+        />
+      </div>
 
       <div>
         <button onClick={handleSubmit}>제출하기</button>
