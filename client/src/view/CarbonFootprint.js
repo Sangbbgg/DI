@@ -26,10 +26,8 @@ function CarbonFootprint() {
     kg: "",
     l: "",
   });
-
-  const [resultData, setResultData] = useState("");
-
-  const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
+  
+  console.log("세션:",sessionStorage)
 
   // 사용자의 이번 달 데이터 존재 여부를 확인하고, 결과에 따라 탭을 설정
   useEffect(() => {
