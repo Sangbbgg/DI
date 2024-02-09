@@ -57,6 +57,12 @@ const connection = mysql.createConnection({
   password: "1234",
   database: "ezteam2",
   port: 5005,
+
+  // host: "192.168.45.188",
+  // user: "root",
+  // password: "1234",
+  // database: "ezteam2",
+  // port: 5005,
 });
 
 // 프로미스 기반 MySQL 연결 설정
