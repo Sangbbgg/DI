@@ -14,7 +14,7 @@ function Consumption({ inputData, initialData, onResultSubmit }) {
 
   // parent_category_id가 4인 데이터 필터링 및 정렬
   const transportationOptions = initialData.filter((item) => item.parent_category_id === 4).sort((a, b) => a.id - b.id);
-
+// ss
   // 교통 부분의 라디오 버튼 변경 핸들러
   const handleTransportChange = (e) => {
     const { value } = e.target;
