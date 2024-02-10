@@ -4,18 +4,19 @@ import Consumption from "../Compornents/CarbonFootprints/Consumption";
 import Result from "../Compornents/CarbonFootprints/Result";
 import Practice from "../Compornents/CarbonFootprints/Practice";
 // ---------------------------------------------------------
-
+import "../Styles/CarbonFootprint.css";
 function CarbonFootprint() {
   // const userId = 104716; //개발용 user_id
-  const userId = sessionStorage.getItem("userId");
-
+  const storedUserData = sessionStorage.getItem("userData");
+  const userData = JSON.parse(storedUserData);
+  console.log(userData);
   const currentDate = new Date().toISOString().slice(0, 10); // 현재 날짜를 'YYYY-MM-DD' 형식으로
 
   const [activeTab, setActiveTab] = useState("consumption"); // 탭 핸들링
-  const [userData, setUserData] = useState(null);
+  const [userEmissionData, setUserData] = useState(null);
   const [newResultData, setNewResultData] = useState(null);
   const [initialData, setInitialData] = useState(null); // 초기 데이터 상태 추가
-
+  console.log("initialData :", initialData);
   const [consumptionData, setConsumptionData] = useState({
     electricity: "",
     gas: "",
@@ -26,14 +27,16 @@ function CarbonFootprint() {
     kg: "",
     l: "",
   });
-  
-  console.log("세션:",sessionStorage)
+
+  // console.log("세션:",sessionStorage)
 
   // 사용자의 이번 달 데이터 존재 여부를 확인하고, 결과에 따라 탭을 설정
   useEffect(() => {
     const checkData = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/api/carbonFootprint/check/${userId}/${currentDate}`);
+        const response = await fetch(
+          `http://localhost:8000/api/carbonFootprint/check/${userData.userNumber}/${currentDate}`
+        );
         const data = await response.json();
         if (data.hasData) {
           setNewResultData(data.data);
@@ -61,13 +64,13 @@ function CarbonFootprint() {
 
     checkData();
     fetchInitialData();
-  }, [userId, currentDate]);
+  }, [userData.userId, currentDate]);
 
   const handleTabChange = (tabName) => {
     // "결과보기" 또는 "생활속 실천방안" 탭으로 이동하려고 할 때
     if (tabName === "result" || tabName === "practice") {
       // 서버로부터 넘어온 userData가 있거나, 사용자가 데이터를 제출한 경우 (resultData가 존재)에만 탭 전환 허용
-      if (!userData && !newResultData) {
+      if (!userEmissionData && !newResultData) {
         alert("제출하기 완료하신 후에 결과확인하실 수 있습니다.");
         return; // userData도 없고 resultData도 없으면 여기서 함수 종료
       }
@@ -81,7 +84,7 @@ function CarbonFootprint() {
     // 사용자가 데이터를 제출하면, 이를 userData에 반영하여 바로 "결과보기" 탭에서 사용할 수 있도록 합니다.
     // 이는 서버로부터 받은 userData가 있더라도, 사용자의 최신 제출을 반영하는 것을 우선합니다.
     setUserData({
-      ...userData,
+      ...userEmissionData,
       ...newResultData,
     });
     setConsumptionData(inputData);
@@ -104,8 +107,8 @@ function CarbonFootprint() {
         );
       case "result":
         // 서버의 userData가 있으면 그 값을, 없으면 로컬의 resultData를 사용
-        const dataToShow = userData || newResultData;
-        return <Result initialData={initialData.calculationAdviceData} resultData={dataToShow} userId={userId} />;
+        const dataToShow = userEmissionData || newResultData;
+        return <Result initialData={initialData.calculationAdviceData} resultData={dataToShow} userData={userData} />;
       case "practice":
         return <Practice />;
       default:
@@ -119,16 +122,31 @@ function CarbonFootprint() {
     }
   };
 
-  return (
-    <div>
-      <ul>
-        {!newResultData && <li onClick={() => handleTabChange("consumption")}>계산하기</li>}
-        <li onClick={() => handleTabChange("result")}>결과보기</li>
-        <li onClick={() => handleTabChange("practice")}>생활속 실천방안</li>
-      </ul>
+  const tabItemClass = (tabName) => {
+    return `tab-item ${activeTab === tabName ? "active" : ""}`;
+  };
 
-      <div>{renderContent()}</div>
-    </div>
+  return (
+    <>
+      <div className="menu-container">
+        <div className="tab-container">
+          <ul className="tab-menu">
+            {!newResultData && (
+              <li className={tabItemClass("consumption")} onClick={() => handleTabChange("consumption")}>
+                계산하기
+              </li>
+            )}
+            <li className={tabItemClass("result")} onClick={() => handleTabChange("result")}>
+              결과보기
+            </li>
+            <li className={tabItemClass("practice")} onClick={() => handleTabChange("practice")}>
+              생활속 실천방안
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div className="content-container">{renderContent()}</div>
+    </>
   );
 }
 

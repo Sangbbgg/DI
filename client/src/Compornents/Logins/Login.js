@@ -20,8 +20,12 @@ function LoginPage() {
     .then(response => {
       console.log('서버 응답:', response);
       if (response.data.success) {
+        const userData={
+          userNumber:response.data.data[0].userNumber,
+          userName:response.data.data[0].username,
+        }
         sessionStorage.setItem('loggedIn', true);
-        sessionStorage.setItem('userId', JSON.stringify(response.data.data[0].userNumber)); // 0210 상호형 추가 세션에 userNumber 
+        sessionStorage.setItem('userData',JSON.stringify(userData) ); // 0210 상호형 추가 세션에 userNumber,username추가
         navigate('/');
         window.location.reload(); //0210 상호형 추가 페이지를강제로 리로드
       } else {

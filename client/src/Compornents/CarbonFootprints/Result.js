@@ -1,19 +1,20 @@
-import React from "react";
-import ChartForm from "./Result/chartData";
+import React, { useState, useEffect } from "react";
+import PiChart from "./Result/piChartData";
+import BarChart from "./Result/barChart";
 import { useNavigate } from "react-router-dom";
 
-function Result({ initialData, resultData, userId }) {
+function Result({ initialData, resultData, userData }) {
   const navigate = useNavigate();
+  const [barChatData, setBarChatData] = useState([]);
 
   const hasResultData = resultData && resultData.calculation_month;
 
   // console.log("유저 결과 :", userData);
   console.log("추천 실천과제:", initialData);
   console.log("resultData:", resultData);
-
   // const userId = 104716;
 
-  const moclData1 = {
+  const averageData = {
     // 평균 데이터
     electricity: 32.5,
     gas: 38.9,
@@ -23,6 +24,32 @@ function Result({ initialData, resultData, userId }) {
     total: 344.4,
   };
 
+  const labels = {
+    electricity: "전기",
+    gas: "가스",
+    water: "수도",
+    transportation: "교통",
+    waste: "폐기물",
+  };
+
+  const colors = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#FF9752", "#FF8042"];
+  // useEffect를 컴포넌트 최상위 수준으로 이동
+  useEffect(() => {
+    const convertToChartData = (resultData, averageData, labels, colors) => {
+      return Object.keys(labels).map((key, index) => ({
+        name: labels[key],
+        user: parseFloat(resultData[key]),
+        average: averageData[key],
+        color: colors[index],
+      }));
+    };
+
+    if (resultData && Object.keys(resultData).length > 0) {
+      const data = convertToChartData(resultData, averageData, labels, colors);
+      setBarChatData(data); // 상태 업데이트 함수를 올바르게 호출
+    }
+  }, [resultData]);
+
   // 객체를 배열로 변환
   function convertDataToObject(resultData) {
     // resultData가 유효하지 않은 경우, 빈 객체로 처리
@@ -30,14 +57,6 @@ function Result({ initialData, resultData, userId }) {
       console.error("Invalid or undefined resultData:", resultData);
       return [];
     }
-
-    const labels = {
-      electricity: "전기",
-      gas: "가스",
-      water: "수도",
-      transportation: "교통",
-      waste: "폐기물",
-    };
 
     const result = [];
     for (const [key, value] of Object.entries(resultData)) {
@@ -70,7 +89,7 @@ function Result({ initialData, resultData, userId }) {
   const onSaveClick = async () => {
     const calculationMonth = new Date().toISOString().slice(0, 10); // 현재 날짜를 'YYYY-MM-DD' 형식으로 설정
     const postData = {
-      userId: userId,
+      userId: userData.userNumber,
       electricity: resultData.electricity,
       gas: resultData.gas,
       water: resultData.water,
@@ -102,6 +121,7 @@ function Result({ initialData, resultData, userId }) {
       alert("데이터 저장에 실패했습니다.");
     }
   };
+
   return (
     <div>
       <section className="household_two_step">
@@ -111,17 +131,17 @@ function Result({ initialData, resultData, userId }) {
         <div>
           <p>사용량 분석</p>
         </div>
-        <div style={{ width: "100%", height: 400 }}>
-          <ChartForm data={data} />
+        <div style={{ width: "100%" }}>
+          <PiChart data={data} />
           <div>
             <div>
               <div>
                 <h2>결과안내</h2>
-                <p>{"user이름"}님의 이산화탄소(CO₂) 발생량 통계입니다.</p>
+                <p>{userData.userName}님의 이산화탄소(CO₂) 발생량 통계입니다.</p>
               </div>
               <p>
-                {"user이름"} 가정은 이산화탄소 배출량은 총 {resultData.total}kg 이며, 비슷한 다른 가정 평균{" "}
-                {moclData1.total}kg 보다 약 {((resultData.total / moclData1.total) * 100 - 100).toFixed(1)}% 더 많이
+                {userData.userName} 가정은 이산화탄소 배출량은 총 {resultData.total}kg 이며, 비슷한 다른 가정 평균{" "}
+                {averageData.total}kg 보다 약 {((resultData.total / averageData.total) * 100 - 100).toFixed(1)}% 더 많이
                 배출하고 있습니다. 아래의 그래프를 보고 어느 부분에서 이산화탄소를 많이 발생하고 있는지 비교해 보세요.
               </p>
               {!hasResultData && (
@@ -133,6 +153,29 @@ function Result({ initialData, resultData, userId }) {
             </div>
           </div>
         </div>
+      </div>
+      <div className="barChart-container">
+        {barChatData.map((data, index) => (
+          <div key={index} className="barChart">
+            <BarChart barChatData={[data]} /> {/* 이 부분을 수정했습니다. */}
+          </div>
+        ))}
+      </div>
+
+      <div>
+        <div>
+          <p>실천 목표</p>
+        </div>
+        <div style={{ width: "100%" }}>
+          <h2>우리집 실천목표! 생활 속에서 실천가능한 목표를 선택해주세요.</h2>
+        </div>
+        <ul>
+          {Object.keys(labels).map((key) => (
+            <li key={key}>{labels[key]}
+            <div>1</div></li>
+            
+          ))}
+        </ul>
       </div>
     </div>
   );
