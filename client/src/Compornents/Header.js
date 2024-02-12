@@ -15,7 +15,7 @@ function Header() {
   // 로그아웃 시 세션 스토리지에서 로그인 상태 제거
   const handleLogout = () => {
     sessionStorage.removeItem("loggedIn");
-    sessionStorage.removeItem("userId"); //0210 상호형 추가
+    sessionStorage.removeItem("userData"); //0210 상호형 추가
     setLoggedIn(false);
     navigate("/"); //0210 상호형 추가
   };
