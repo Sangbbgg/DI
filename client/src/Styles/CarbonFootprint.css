@@ -83,7 +83,7 @@ input[type="radio"] {
 .barChart-container{
     width: 95%;
     display: flex;
-    flex-flow: column;
+    /* flex-flow: column; */
     justify-content: space-between;
     align-items: center;
 }
