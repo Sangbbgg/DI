@@ -171,8 +171,7 @@ function Result({ initialData, resultData, userData }) {
         </div>
         <ul>
           {Object.keys(labels).map((key) => (
-            <li key={key}>{labels[key]}
-            <div>1</div></li>
+            <li key={key}>{labels[key]}</li>
             
           ))}
         </ul>
