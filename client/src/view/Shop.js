@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 // import styles from "./shop.module.css"; //테스트를 위해 비활성화
 import Paging from "../Compornents/Paging";
+import styles from './Shop.module.css';
 
 const Shop = () => {
   // const sessionPage = window.sessionStorage.getItem('page');
