@@ -31,6 +31,11 @@ const Cart = () => {
 
   // 마운트 과정에서 장바구니 데이터를 가져오는 메소드
   useEffect(() => {
+    // 로컬 스토리지가 확인되지 않는다면 생성한다.
+    if (localStorage.baskets === undefined) {
+      localStorage.setItem("baskets", JSON.stringify([]));
+    }
+
     setCartReset(0);
     resetAllCheckboxes();
     // 로컬 스토리지의 데이터를 json 파일로 가져온다

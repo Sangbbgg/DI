@@ -35,6 +35,11 @@ const Ordersheet = () => {
   //    주문자 배송지 정보, 포인트 보유량 등에 활용하기 위해 요청함.
   // 3. switch => orderType, 즉 주문 형식에 따라 사용자에게 보여줄 상품들의 리스트를 설정한다.
   useEffect(() => {
+    // 로컬 스토리지가 확인되지 않는다면 생성한다.
+    if (localStorage.baskets === undefined) {
+      localStorage.setItem("baskets", JSON.stringify([]));
+    }
+
     if (!location.state) {
       alert("잘못된 접근입니다!");
       return navigate("/shop");
