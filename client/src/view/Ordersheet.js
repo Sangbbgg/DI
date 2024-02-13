@@ -160,7 +160,7 @@ const Ordersheet = () => {
         phoneNumber: phoneNumberInfo,
         reqMessage: messageInfo,
         totalCount: userCart.length,
-        totalAmount: totalProductAmount() - deliveryFee() - usePoint,
+        totalAmount: totalProductAmount() + deliveryFee() - usePoint,
         payment: paymentType,
         usePoint: usePoint,
         // imageURL,
