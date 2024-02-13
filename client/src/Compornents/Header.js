@@ -4,7 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 function Header() {
   const [loggedIn, setLoggedIn] = useState(false);
   const navigate = useNavigate();
-<<<<<<< HEAD
   // 페이지가 로드될 때 로그인 상태를 확인하고 상태를 업데이트
   useEffect(() => {
     const storedLoggedIn = sessionStorage.getItem("loggedIn");
@@ -12,13 +11,6 @@ function Header() {
       setLoggedIn(true);
     }
   }, [setLoggedIn]);
-=======
-  // 페이지가 로드될 때 로그인 상태를 확인하고 상태를 업데이트//
-  useEffect(() => {
-    const storedLoggedIn = sessionStorage.getItem('loggedIn');
-    setLoggedIn(storedLoggedIn ? true : false);
-  }, []);
->>>>>>> f0fc97ef33b12c52e9871f34df59ca1bcb9f6a92
 
   // 로그아웃 시 세션 스토리지에서 로그인 상태 제거
   const handleLogout = () => {
