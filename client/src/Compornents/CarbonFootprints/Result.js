@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 function Result({ initialData, resultData, userData }) {
   const navigate = useNavigate();
   const [barChatData, setBarChatData] = useState([]);
-
+  const [selectSubTap, setSelectSubTap] = useState(null);
   const hasResultData = resultData && resultData.calculation_month;
 
   // console.log("유저 결과 :", userData);
@@ -122,6 +122,9 @@ function Result({ initialData, resultData, userData }) {
     }
   };
 
+  const handleSubTapClick = (key) => {
+    setSelectSubTap(key);
+  };
   return (
     <div>
       <section className="household_two_step">
@@ -140,9 +143,8 @@ function Result({ initialData, resultData, userData }) {
                 <p>{userData.userName}님의 이산화탄소(CO₂) 발생량 통계입니다.</p>
               </div>
               <p>
-                {userData.userName} 가정은 이산화탄소 배출량은 총 {resultData.total}kg 이며, 비슷한 다른 가정 평균{" "}
-                {averageData.total}kg 보다 약 {((resultData.total / averageData.total) * 100 - 100).toFixed(1)}% 더 많이
-                배출하고 있습니다. 아래의 그래프를 보고 어느 부분에서 이산화탄소를 많이 발생하고 있는지 비교해 보세요.
+                {userData.userName} 가정은 이산화탄소 배출량은 총 {resultData.total}kg 이며, 비슷한 다른 가정 평균 {averageData.total}kg 보다 약{" "}
+                {((resultData.total / averageData.total) * 100 - 100).toFixed(1)}% 더 많이 배출하고 있습니다. 아래의 그래프를 보고 어느 부분에서 이산화탄소를 많이 발생하고 있는지 비교해 보세요.
               </p>
               {!hasResultData && (
                 <>
@@ -169,12 +171,16 @@ function Result({ initialData, resultData, userData }) {
         <div style={{ width: "100%" }}>
           <h2>우리집 실천목표! 생활 속에서 실천가능한 목표를 선택해주세요.</h2>
         </div>
-        <ul>
-          {Object.keys(labels).map((key) => (
-            <li key={key}>{labels[key]}</li>
-            
-          ))}
-        </ul>
+        <div>
+          <ul>
+            {Object.keys(labels).map((key) => (
+              <li key={key} onClick={() => handleSubTapClick(key)}>
+                {labels[key]}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div></div>
       </div>
     </div>
   );

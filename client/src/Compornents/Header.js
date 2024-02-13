@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 function Header() {
   const [loggedIn, setLoggedIn] = useState(false);
   const navigate = useNavigate();
-  // 페이지가 로드될 때 로그인 상태를 확인하고 상태를 업데이트
+  // 페이지가 로드될 때 로그인 상태를 확인하고 상태를 업데이트//
   useEffect(() => {
     const storedLoggedIn = sessionStorage.getItem("loggedIn");
     if (storedLoggedIn) {
