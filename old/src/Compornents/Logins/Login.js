@@ -9,9 +9,6 @@ function LoginPage() {
   const navigate = useNavigate();
   const [loginStatus,setloginStatus]= useState('');
 
-
-
-  
   const LoginPageJs = () => {
     console.log('LoginPageJs 함수 호출됨');
   
@@ -23,14 +20,8 @@ function LoginPage() {
     .then(response => {
       console.log('서버 응답:', response);
       if (response.data.success) {
-        const userData={
-          userNumber:response.data.data[0].userNumber,
-          userName:response.data.data[0].username,
-        }
         sessionStorage.setItem('loggedIn', true);
-        sessionStorage.setItem('userData',JSON.stringify(userData) ); // 0210 상호형 추가 세션에 userNumber,username추가
         navigate('/');
-        // window.location.reload(); //0210 상호형 추가 페이지를강제로 리로드
       } else {
         // 로그인 실패 시 처리
         console.log('로그인 실패:', response.data);

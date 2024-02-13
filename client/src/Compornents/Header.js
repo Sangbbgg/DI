@@ -6,11 +6,9 @@ function Header() {
   const navigate = useNavigate();
   // 페이지가 로드될 때 로그인 상태를 확인하고 상태를 업데이트//
   useEffect(() => {
-    const storedLoggedIn = sessionStorage.getItem("loggedIn");
-    if (storedLoggedIn) {
-      setLoggedIn(true);
-    }
-  }, [setLoggedIn]);
+    const storedLoggedIn = sessionStorage.getItem('loggedIn');
+    setLoggedIn(storedLoggedIn ? true : false);
+  }, []);
 
   // 로그아웃 시 세션 스토리지에서 로그인 상태 제거
   const handleLogout = () => {
@@ -45,4 +43,8 @@ function Header() {
   );
 }
 
+<<<<<<< HEAD
 export default Header;
+=======
+export default Header;
+>>>>>>> efc5124062be42b3d4a118bf51b4b506c3efefac
