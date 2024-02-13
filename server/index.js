@@ -3,8 +3,8 @@ const cors = require("cors");
 const mysql = require("mysql2");
 const mysqlPromise = require("mysql2/promise");
 const bcrypt = require("bcrypt");
-// const session = require("express-session");//0213 김민호 세션 추가
-// const MySQLStore= require('express-mysql-session')(session);//0213 김민호 
+const session = require("express-session");//0213 김민호 세션 추가
+const MySQLStore= require('express-mysql-session')(session);//0213 김민호 
 
 // 이기현_추가 코드 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
@@ -335,7 +335,7 @@ app.get("/ordersheet", async (req, res, next) => {
 //-------------------------------개인 회원번호---------------------------------------------
 const usedUserNumbers = new Set(); // 중복 방지를 위한 Set
 
-async function generateUserNumber() {
+async function generateUserid() {
   const min = 100000;
   const max = 199999;
   let randomUserNumber = Math.floor(Math.random() * (max - min + 1) + min);
@@ -351,12 +351,39 @@ async function generateUserNumber() {
   return randomUserNumber;
 }
 //-------------------------------로그인-----------------------------------------------
+
+//-------------------------------익스플로스 세션 0213------------------------------------
+const sessionStore = new MySQLStore({
+  expiration: 3600000, // 세션의 유효시간 (1시간)
+  createDatabaseTable: true, // 세션 테이블을 자동으로 생성
+  schema: {
+    tableName: 'sessions', // 세션 테이블의 이름
+    columnNames: {
+      session_id: 'session_id', // 세션 ID를 저장하는 열의 이름
+      expires: 'expires', // 세션 만료 시간을 저장하는 열의 이름
+      data: 'data', // 세션 데이터를 저장하는 열의 이름
+    },
+  },
+}, connection);
+
+app.use(session({
+  secret: 'secretKey', // 랜덤하고 안전한 문자열로 바꾸세요.
+  resave: false,
+  saveUninitialized: true,
+  store: sessionStore,
+  cookie: {
+    maxAge: 3600000,
+    httpOnly: true,
+  },
+}));
+//-------------------------------익스플로스 세션 0213------------------------------------
+
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
     // 이메일을 사용하여 데이터베이스에서 사용자를 찾습니다.
-    connection.query("SELECT * FROM login WHERE email = ?", [email], async (err, result) => {
+    connection.query("SELECT * FROM user WHERE email = ?", [email], async (err, result) => {
       if (err) {
         console.error("서버에서 에러 발생:", err);
         res.status(500).send({ success: false, message: "서버 에러 발생" });
@@ -364,6 +391,14 @@ app.post("/login", async (req, res) => {
         if (result.length > 0) {
           const isPasswordMatch = await bcrypt.compare(password, result[0].password);
           if (isPasswordMatch) {
+            // 0213 김민호 세션스토리 초기화 확인
+            if (!req.session) {
+              req.session = {};
+            }
+            //세션데이터 저장(새로운 데이터 추가시 이부분 수정)
+            req.session.usertype = result[0].usertype;//0213 김민호 익스플로우 세션기능 추가
+            req.session.userid = result[0].userid;//0213 김민호 익스플로우 세션기능 추가
+
             res.send({ success: true, message: "로그인 성공", data: result });
             
           } else {
@@ -384,29 +419,29 @@ app.post("/login", async (req, res) => {
 });
 //-------------------------------회원가입----------------------------------------------
 app.post("/regester", async (req, res) => {
-  const { username, password, email, address, Detailedaddress, phoneNumber, usertype } = req.body;
+  const { username, password, email, address, detailedaddress, phonenumber, usertype } = req.body;
 
   try {
     // 비밀번호를 해시화
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // 회원번호 생성 (6자리)
-    const userNumber = await generateUserNumber();
+    const userid = await generateUserid();
 
     // 회원번호 생성 (1,2,3 중 하나)
-    const userTypeNumber = {
+    const usertypeNumber = {
       personal: 1, // 개인
       business: 2, // 기업
       organization: 3, // 단체
     };
 
-    const userType = userTypeNumber[usertype];
+    const usertype = usertypeNumber[usertype];
 
     const sql =
-      "INSERT INTO login (userNumber, username, email, password, address, Detailedaddress, phoneNumber, usertype) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+      "INSERT INTO user (userid, username, email, password, address, detailedaddress, phonenumber, usertype) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     connection.query(
       sql,
-      [userNumber, username, email, hashedPassword, address, Detailedaddress, phoneNumber, usertype],
+      [userid, username, email, hashedPassword, address, detailedaddress, phonenumber, usertype],
       (err, result) => {
         if (err) {
           console.error("MySQL에 데이터 삽입 중 오류:", err);
@@ -420,7 +455,7 @@ app.post("/regester", async (req, res) => {
         return res.status(200).json({
           success: true,
           message: "사용자가 성공적으로 등록됨",
-          userType,
+          usertype,
         });
       }
     );

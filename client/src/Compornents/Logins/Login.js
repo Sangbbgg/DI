@@ -23,14 +23,21 @@ function LoginPage() {
     .then(response => {
       console.log('서버 응답:', response);
       if (response.data.success) {
+        const { usertype, userid, username } = response.data.data[0]; //0213 김민호 익스플로우세션
         const userData={
-          userNumber:response.data.data[0].userNumber,
-          userName:response.data.data[0].username,
+          userid: userid,
+          username: username,
+          usertype: usertype,
         }
         sessionStorage.setItem('loggedIn', true);
         sessionStorage.setItem('userData',JSON.stringify(userData) ); // 0210 상호형 추가 세션에 userNumber,username추가
+        sessionStorage.setItem('usertype', usertype);//익스플로우 세션 데이터 추가 0213 김민호
+
+  
+
+
         navigate('/');
-        // window.location.reload(); //0210 상호형 추가 페이지를강제로 리로드
+        window.location.reload(); //0210 상호형 추가 페이지를강제로 리로드
       } else {
         // 로그인 실패 시 처리
         console.log('로그인 실패:', response.data);

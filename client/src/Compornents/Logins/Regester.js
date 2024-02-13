@@ -12,8 +12,8 @@ function Regester() {
   const [passwordMatch,setPasswordMatch] = useState(true);
   const [openPostcode, setOpenPostcode] = useState(false);
   const [address, setAddress] = useState('');
-  const [Detailedaddress, setDetailedaddress] = useState('');
-  const [phoneNumber, setphoneNumber] = useState('');
+  const [detailedaddress, setdetailedaddress] = useState('');
+  const [phonenumber, setphonenumber] = useState('');
 
   const handle = handlePostcode(openPostcode, setOpenPostcode, setAddress);
 
@@ -50,8 +50,8 @@ axios.post('http://localhost:8000/regester', {
   password,
   email,
   address,
-  Detailedaddress,
-  phoneNumber,
+  detailedaddress,
+  phonenumber,
   usertype: 'personal'
 })
   .then(response => {
@@ -114,8 +114,8 @@ axios.post('http://localhost:8000/regester', {
        <input
         type="text"
         placeholder="핸드폰번호"
-        value={phoneNumber}
-        onChange={(e) => setphoneNumber(e.target.value)}
+        value={phonenumber}
+        onChange={(e) => setphonenumber(e.target.value)}
       />
 
       <br />
@@ -138,8 +138,8 @@ axios.post('http://localhost:8000/regester', {
       <input
         type="text"
         placeholder="상세주소"
-        value={Detailedaddress}
-        onChange={(e) => setDetailedaddress(e.target.value)}
+        value={detailedaddress}
+        onChange={(e) => setdetailedaddress(e.target.value)}
       />
       <br/>
       <button className="RegesterBtn" onClick={handleRegesterClick}>
