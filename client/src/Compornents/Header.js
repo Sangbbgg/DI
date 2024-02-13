@@ -43,8 +43,4 @@ function Header() {
   );
 }
 
-<<<<<<< HEAD
 export default Header;
-=======
-export default Header;
->>>>>>> efc5124062be42b3d4a118bf51b4b506c3efefac
