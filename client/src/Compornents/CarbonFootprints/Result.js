@@ -8,7 +8,10 @@ function Result({ initialData, resultData, userData }) {
   const navigate = useNavigate();
   const [barChatData, setBarChatData] = useState([]);
   const [selectTargetTap, setSelectSubTap] = useState("electricity");
+
   const [targetEmissions, setTargetEmission] = useState(resultData);
+    // 체크 상태를 저장할 상태 변수 추가
+    const [checkedItems, setCheckedItems] = useState({});
 
   const hasResultData = resultData && resultData.calculation_month;
 
@@ -135,6 +138,23 @@ function Result({ initialData, resultData, userData }) {
     setSelectSubTap(key);
   };
 
+  
+  const handleCheckTargetEmissions = (item, isChecked) => {
+    
+    setTargetEmission((prevEmissions) => {
+      // 계산된 newValue가 소수 첫째자리까지 포맷되고, 0 이하가 되지 않도록 처리
+      const calculatedValue = isChecked ? prevEmissions[item.name] - parseFloat(item.savings_value) : prevEmissions[item.name] + parseFloat(item.savings_value);
+
+      const newValue = parseFloat(calculatedValue.toFixed(1)); // 소수 첫째자리까지 포맷
+
+          // newValue가 0 이하가 되지 않도록 처리
+    const finalValue = Math.max(0, newValue);
+      return {
+        ...prevEmissions,
+        [item.name]: finalValue,
+      };
+    });
+  };
   return (
     <div>
       <section className="household_two_step">
@@ -201,7 +221,13 @@ function Result({ initialData, resultData, userData }) {
                       .map((filteredItem, index) => (
                         <div key={index}>
                           <label>
-                            <input type="checkbox" id={`${label}-${index}`} name={filteredItem.name} value={filteredItem.savings_value} />
+                            <input
+                              type="checkbox"
+                              id={`${label}-${index}`}
+                              name={filteredItem.name}
+                              value={filteredItem.savings_value}
+                              onChange={(e) => handleCheckTargetEmissions(filteredItem, e.target.checked)}
+                            />
                             <span>{filteredItem.advice_text}</span>
                           </label>
                         </div>
@@ -213,7 +239,7 @@ function Result({ initialData, resultData, userData }) {
                       .filter((item) => item.name === labels[label])
                       .map((filterBarchartItem, index) => (
                         <div key={index} className="barChart" style={{ width: "70%" }}>
-                          <TargetBarchart barChatData={[filterBarchartItem]}/>
+                          <TargetBarchart barChatData={[filterBarchartItem]} />
                           {console.log("필터 데이터", filterBarchartItem)}
                         </div>
                       ))}

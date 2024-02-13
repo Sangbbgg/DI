@@ -9,7 +9,7 @@ function CarbonFootprint() {
   // const userId = 104716; //개발용 user_id
   const storedUserData = sessionStorage.getItem("userData");
   const userData = JSON.parse(storedUserData);
-  // console.log("userData :",userData);
+  console.log("userData :",userData);
   const currentDate = new Date().toISOString().slice(0, 10); // 현재 날짜를 'YYYY-MM-DD' 형식으로
 
   const [activeTab, setActiveTab] = useState("consumption"); // 탭 핸들링
@@ -35,7 +35,7 @@ function CarbonFootprint() {
     const checkData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8000/api/carbonFootprint/check/${userData.userNumber}/${currentDate}`
+          `http://localhost:8000/api/carbonFootprint/check/${userData.userid}/${currentDate}`
         );
         const data = await response.json();
         if (data.hasData) {
@@ -64,7 +64,7 @@ function CarbonFootprint() {
 
     checkData();
     fetchInitialData();
-  }, [userData.userId, currentDate]);
+  }, [userData.userid, currentDate]);
 
   const handleTabChange = (tabName) => {
     // "결과보기" 또는 "생활속 실천방안" 탭으로 이동하려고 할 때
