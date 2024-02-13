@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from "react";
 import PiChart from "./Result/piChartData";
 import BarChart from "./Result/barChart";
+import TargetBarchart from "./Result/targetBarchart";
 import { useNavigate } from "react-router-dom";
 
 function Result({ initialData, resultData, userData }) {
   const navigate = useNavigate();
   const [barChatData, setBarChatData] = useState([]);
-  const [selectSubTap, setSelectSubTap] = useState(null);
+  const [selectTargetTap, setSelectSubTap] = useState("electricity");
+  const [targetEmissions, setTargetEmission] = useState(resultData);
+
   const hasResultData = resultData && resultData.calculation_month;
 
   // console.log("유저 결과 :", userData);
-  console.log("추천 실천과제:", initialData);
-  console.log("resultData:", resultData);
+  console.log("추천 실천과제 :", initialData);
+  console.log("resultData :", resultData);
+  console.log("targetEmissions :", targetEmissions);
+  console.log("barChatData :", barChatData);
   // const userId = 104716;
 
   const averageData = {
@@ -35,20 +40,24 @@ function Result({ initialData, resultData, userData }) {
   const colors = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#FF9752", "#FF8042"];
   // useEffect를 컴포넌트 최상위 수준으로 이동
   useEffect(() => {
-    const convertToChartData = (resultData, averageData, labels, colors) => {
-      return Object.keys(labels).map((key, index) => ({
-        name: labels[key],
-        user: parseFloat(resultData[key]),
-        average: averageData[key],
-        color: colors[index],
-      }));
+    const convertToChartData = (resultData, averageData, labels, colors, targetEmissions) => {
+      return Object.keys(labels).map((key, index) => {
+        const targetKey = key; // labels 객체의 키와 targetEmissions 객체의 키가 서로 매치되어야 함
+        return {
+          name: labels[key],
+          user: parseFloat(resultData[key]),
+          average: averageData[key],
+          color: colors[index],
+          target: parseFloat(targetEmissions[targetKey]), // targetEmissions의 값을 target으로 추가
+        };
+      });
     };
 
     if (resultData && Object.keys(resultData).length > 0) {
-      const data = convertToChartData(resultData, averageData, labels, colors);
-      setBarChatData(data); // 상태 업데이트 함수를 올바르게 호출
+      const data = convertToChartData(resultData, averageData, labels, colors, targetEmissions);
+      setBarChatData(data);
     }
-  }, [resultData]);
+  }, [resultData, targetEmissions]);
 
   // 객체를 배열로 변환
   function convertDataToObject(resultData) {
@@ -115,7 +124,7 @@ function Result({ initialData, resultData, userData }) {
       // 데이터 저장 성공 후 알림 표시
       alert("데이터가 성공적으로 저장되었습니다. 메인 페이지로 이동합니다.");
       // 메인 페이지로 리다이렉트
-      navigate("/"); // 또는 React Router를 사용하는 경우: history.push('/');
+      navigate("/");
     } catch (error) {
       console.error("Error saving data: " + error.message);
       alert("데이터 저장에 실패했습니다.");
@@ -125,6 +134,7 @@ function Result({ initialData, resultData, userData }) {
   const handleSubTapClick = (key) => {
     setSelectSubTap(key);
   };
+
   return (
     <div>
       <section className="household_two_step">
@@ -143,7 +153,7 @@ function Result({ initialData, resultData, userData }) {
                 <p>{userData.userName}님의 이산화탄소(CO₂) 발생량 통계입니다.</p>
               </div>
               <p>
-                {userData.userName} 가정은 이산화탄소 배출량은 총 {resultData.total}kg 이며, 비슷한 다른 가정 평균 {averageData.total}kg 보다 약{" "}
+                {userData.userName}님의 가정은 이산화탄소 배출량은 총 {resultData.total}kg 이며, 비슷한 다른 가정 평균 {averageData.total}kg 보다 약{" "}
                 {((resultData.total / averageData.total) * 100 - 100).toFixed(1)}% 더 많이 배출하고 있습니다. 아래의 그래프를 보고 어느 부분에서 이산화탄소를 많이 발생하고 있는지 비교해 보세요.
               </p>
               {!hasResultData && (
@@ -159,7 +169,8 @@ function Result({ initialData, resultData, userData }) {
       <div className="barChart-container">
         {barChatData.map((data, index) => (
           <div key={index} className="barChart">
-            <BarChart barChatData={[data]} /> {/* 이 부분을 수정했습니다. */}
+            <BarChart barChatData={[data]} />
+            {console.log(data)}
           </div>
         ))}
       </div>
@@ -179,8 +190,41 @@ function Result({ initialData, resultData, userData }) {
               </li>
             ))}
           </ul>
+          {Object.keys(labels).map(
+            (label) =>
+              selectTargetTap === label && (
+                <div key={label}>
+                  <div>
+                    <div> {labels[label]}</div>
+                    {initialData
+                      .filter((item) => item.name === label)
+                      .map((filteredItem, index) => (
+                        <div key={index}>
+                          <label>
+                            <input type="checkbox" id={`${label}-${index}`} name={filteredItem.name} value={filteredItem.savings_value} />
+                            <span>{filteredItem.advice_text}</span>
+                          </label>
+                        </div>
+                      ))}
+                  </div>
+                  <div>
+                    <h3>부분별 실천목표</h3>
+                    {barChatData
+                      .filter((item) => item.name === labels[label])
+                      .map((filterBarchartItem, index) => (
+                        <div key={index} className="barChart" style={{ width: "70%" }}>
+                          <TargetBarchart barChatData={[filterBarchartItem]}/>
+                          {console.log("필터 데이터", filterBarchartItem)}
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )
+          )}
+          <div>
+            <h3>월간 CO₂ 저감목표</h3>
+          </div>
         </div>
-        <div></div>
       </div>
     </div>
   );

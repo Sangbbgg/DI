@@ -95,7 +95,7 @@ function Consumption({ inputData, initialData, onResultSubmit }) {
   // 입력값 계산 로직
   useEffect(() => {
     const handleData = inputValue;
-    console.log(inputValue);
+    // console.log("userInputValue :",inputValue);
 
     const getCostFormula = (costObj, key) => Object.values(costObj)[key] ?? "0";
 

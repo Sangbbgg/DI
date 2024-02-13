@@ -4,7 +4,6 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } fro
 export default class CustomBarChart extends PureComponent {
   render() {
     const { barChatData } = this.props;
-    // console.log("data", barChatData);
 
     const maxLeft = Math.max(...barChatData.map((item) => item.user));
     const maxRight = Math.max(...barChatData.map((item) => item.average));
@@ -14,7 +13,7 @@ export default class CustomBarChart extends PureComponent {
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={barChatData}
-          barGap={"30%"}
+          barGap={"50%"}
           margin={{
             top: 20,
             right: 30,
@@ -46,10 +45,7 @@ export default class CustomBarChart extends PureComponent {
             barSize={50}
             label={{ position: "top", formatter: (value) => `${value}kg` }}
           />
-
-          <text x={10} y={10} dy={20} textAnchor="start" fill="#666">
-            {barChatData[0].name}
-          </text>
+          <Bar yAxisId="right" dataKey="target" name="목표" fill="#0064B5" barSize={50} label={{ position: "top", formatter: (value) => `${value}kg` }} />
         </BarChart>
       </ResponsiveContainer>
     );
