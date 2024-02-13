@@ -9,14 +9,14 @@ function CarbonFootprint() {
   // const userId = 104716; //개발용 user_id
   const storedUserData = sessionStorage.getItem("userData");
   const userData = JSON.parse(storedUserData);
-  console.log("userData :",userData);
+  // console.log("userData :",userData);
   const currentDate = new Date().toISOString().slice(0, 10); // 현재 날짜를 'YYYY-MM-DD' 형식으로
 
   const [activeTab, setActiveTab] = useState("consumption"); // 탭 핸들링
   const [userEmissionData, setUserData] = useState(null);
   const [newResultData, setNewResultData] = useState(null);
   const [initialData, setInitialData] = useState(null); // 초기 데이터 상태 추가
-  console.log("initialData :", initialData);
+  // console.log("initialData :", initialData);
   const [consumptionData, setConsumptionData] = useState({
     electricity: "",
     gas: "",

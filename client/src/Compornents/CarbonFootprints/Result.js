@@ -10,16 +10,16 @@ function Result({ initialData, resultData, userData }) {
   const [selectTargetTap, setSelectSubTap] = useState("electricity");
 
   const [targetEmissions, setTargetEmission] = useState(resultData);
-    // 체크 상태를 저장할 상태 변수 추가
-    const [checkedItems, setCheckedItems] = useState({});
+  const [checkedItems, setCheckedItems] = useState({});
+  const [savingValue, setSavingValue] = useState({});
 
   const hasResultData = resultData && resultData.calculation_month;
 
   // console.log("유저 결과 :", userData);
-  console.log("추천 실천과제 :", initialData);
-  console.log("resultData :", resultData);
-  console.log("targetEmissions :", targetEmissions);
-  console.log("barChatData :", barChatData);
+  // console.log("추천 실천과제 :", initialData);
+  // console.log("resultData :", resultData);
+  // console.log("targetEmissions :", targetEmissions);
+  // console.log("barChatData :", barChatData);
   // const userId = 104716;
 
   const averageData = {
@@ -41,6 +41,7 @@ function Result({ initialData, resultData, userData }) {
   };
 
   const colors = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#FF9752", "#FF8042"];
+
   // useEffect를 컴포넌트 최상위 수준으로 이동
   useEffect(() => {
     const convertToChartData = (resultData, averageData, labels, colors, targetEmissions) => {
@@ -138,23 +139,30 @@ function Result({ initialData, resultData, userData }) {
     setSelectSubTap(key);
   };
 
+  // 체크박스 변경 핸들러
+  const handleCheckboxChange = (e) => {
+    const { id, checked, value } = e.target;
   
-  const handleCheckTargetEmissions = (item, isChecked) => {
-    
-    setTargetEmission((prevEmissions) => {
-      // 계산된 newValue가 소수 첫째자리까지 포맷되고, 0 이하가 되지 않도록 처리
-      const calculatedValue = isChecked ? prevEmissions[item.name] - parseFloat(item.savings_value) : prevEmissions[item.name] + parseFloat(item.savings_value);
-
-      const newValue = parseFloat(calculatedValue.toFixed(1)); // 소수 첫째자리까지 포맷
-
-          // newValue가 0 이하가 되지 않도록 처리
-    const finalValue = Math.max(0, newValue);
-      return {
-        ...prevEmissions,
-        [item.name]: finalValue,
-      };
-    });
+    // 현재 상태 복사
+    const currentEntry = { ...savingValue[id] };
+  
+    // 새 항목 추가 또는 업데이트
+    currentEntry[id] = checked ? value : 0;
+  
+  //   // 상태 업데이트
+  //   setSavingValue({
+  //     ...savingValue,
+  //     [id]: currentEntry,
+  //   });
+  
+  //   // 체크박스 상태 업데이트
+  //   setCheckedItems({
+  //     ...checkedItems,
+  //     [id]: checked,
+  //   });
   };
+  // console.log("체크 :", checkedItems);
+  // console.log("체크 value :", savingValue);
   return (
     <div>
       <section className="household_two_step">
@@ -173,8 +181,9 @@ function Result({ initialData, resultData, userData }) {
                 <p>{userData.userName}님의 이산화탄소(CO₂) 발생량 통계입니다.</p>
               </div>
               <p>
-                {userData.userName}님의 가정은 이산화탄소 배출량은 총 {resultData.total}kg 이며, 비슷한 다른 가정 평균 {averageData.total}kg 보다 약{" "}
-                {((resultData.total / averageData.total) * 100 - 100).toFixed(1)}% 더 많이 배출하고 있습니다. 아래의 그래프를 보고 어느 부분에서 이산화탄소를 많이 발생하고 있는지 비교해 보세요.
+                {userData.userName}님의 가정은 이산화탄소 배출량은 총 {resultData.total}kg 이며, 비슷한 다른 가정 평균{" "}
+                {averageData.total}kg 보다 약 {((resultData.total / averageData.total) * 100 - 100).toFixed(1)}% 더 많이
+                배출하고 있습니다. 아래의 그래프를 보고 어느 부분에서 이산화탄소를 많이 발생하고 있는지 비교해 보세요.
               </p>
               {!hasResultData && (
                 <>
@@ -190,7 +199,7 @@ function Result({ initialData, resultData, userData }) {
         {barChatData.map((data, index) => (
           <div key={index} className="barChart">
             <BarChart barChatData={[data]} />
-            {console.log(data)}
+            {/* {console.log(data)} */}
           </div>
         ))}
       </div>
@@ -224,9 +233,13 @@ function Result({ initialData, resultData, userData }) {
                             <input
                               type="checkbox"
                               id={`${label}-${index}`}
-                              name={filteredItem.name}
+                              name={`${filteredItem.name}-${index}`}
+                              // name={filteredItem.name}
                               value={filteredItem.savings_value}
-                              onChange={(e) => handleCheckTargetEmissions(filteredItem, e.target.checked)}
+                              // 체크 박스 추적관리
+
+                              // onChange 작성 부분
+
                             />
                             <span>{filteredItem.advice_text}</span>
                           </label>
@@ -240,7 +253,7 @@ function Result({ initialData, resultData, userData }) {
                       .map((filterBarchartItem, index) => (
                         <div key={index} className="barChart" style={{ width: "70%" }}>
                           <TargetBarchart barChatData={[filterBarchartItem]} />
-                          {console.log("필터 데이터", filterBarchartItem)}
+                          {/* {console.log("필터 데이터", filterBarchartItem)} */}
                         </div>
                       ))}
                   </div>
