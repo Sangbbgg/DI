@@ -37,10 +37,6 @@ function LoginPage() {
         setloginStatus('로그인 실패: '+ response.data.message);
       }
     })
-    .catch(error => {
-      console.error('로그인 요청 중 에러 발생:', error);
-      alert('로그인에 실패했습니다. 다시 시도해주세요.');
-    });
   };
   
   return (

@@ -3,6 +3,8 @@ const cors = require("cors");
 const mysql = require("mysql2");
 const mysqlPromise = require("mysql2/promise");
 const bcrypt = require("bcrypt");
+// const session = require("express-session");//0213 김민호 세션 추가
+// const MySQLStore= require('express-mysql-session')(session);//0213 김민호 
 
 // 이기현_추가 코드 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
@@ -353,36 +355,6 @@ app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    connection.query(
-      // "SELECT * FROM login WHERE email = ?",
-      "SELECT usertype, userNumber, password FROM login WHERE email = ?",
-      //login 테이블에서 email를 가진 사용자의 usertype, userNumber, password를 선택하는 쿼리문
-      [email],
-      async (err, result) => {
-        if (err) {
-          console.error("서버에서 에러 발생:", err);
-          res.status(500).send({ success: false, message: "서버 에러 발생" });
-        } else {
-          if (result.length > 0) {
-            const isPasswordMatch = await bcrypt.compare(
-              password,
-              result[0].password
-            );
-            if (isPasswordMatch) {
-              const{usertype,userNumber}=result[0];
-              res.send({ success: true, message: "로그인 성공", data: {usertype,userNumber}});
-            } else {
-              res.send({
-                success: false,
-                message: "비밀번호가 일치하지 않습니다.",
-              });
-            }
-          } else {
-            res.send({ success: false, message: "유저 정보가 없습니다." });
-          }
-        }
-      }
-    );
     // 이메일을 사용하여 데이터베이스에서 사용자를 찾습니다.
     connection.query("SELECT * FROM login WHERE email = ?", [email], async (err, result) => {
       if (err) {

@@ -3,14 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 
 function Header() {
   const [loggedIn, setLoggedIn] = useState(false);
-<<<<<<< HEAD
-
-  // 페이지가 로드될 때 로그인 상태를 확인
-  useEffect(() => {
-    const storedLoggedIn = sessionStorage.getItem('loggedIn');
-    setLoggedIn(storedLoggedIn ? true : false);
-  }, []);
-=======
   const navigate = useNavigate();
   // 페이지가 로드될 때 로그인 상태를 확인하고 상태를 업데이트
   useEffect(() => {
@@ -19,7 +11,6 @@ function Header() {
       setLoggedIn(true);
     }
   }, [setLoggedIn]);
->>>>>>> efc5124062be42b3d4a118bf51b4b506c3efefac
 
   // 로그아웃 시 세션 스토리지에서 로그인 상태 제거
   const handleLogout = () => {
@@ -45,11 +36,7 @@ function Header() {
             <Link to="/Login">로그인</Link>
           </button>
           <button>
-<<<<<<< HEAD
-            <Link to='/Regester'>회원가입</Link>
-=======
             <Link to="/Regester">회원가입</Link>
->>>>>>> efc5124062be42b3d4a118bf51b4b506c3efefac
           </button>
           <br />
         </>
@@ -58,8 +45,4 @@ function Header() {
   );
 }
 
-<<<<<<< HEAD
 export default Header;
-=======
-export default Header;
->>>>>>> efc5124062be42b3d4a118bf51b4b506c3efefac
