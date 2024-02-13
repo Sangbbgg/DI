@@ -34,11 +34,7 @@ function Header() {
             <Link to="/Login">로그인</Link>
           </button>
           <button>
-<<<<<<< HEAD
-            <Link to='/Regester'>회원가입</Link>
-=======
             <Link to="/Regester">회원가입</Link>
->>>>>>> efc5124062be42b3d4a118bf51b4b506c3efefac
           </button>
           <br />
         </>
