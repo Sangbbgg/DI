@@ -358,6 +358,24 @@ async function generateUserid() {
 
   return randomUserNumber;
 }
+//-------------------------------기업 회원번호---------------------------------------------
+const usedCorporateUserNumbers = new Set(); // 중복 방지를 위한 Set
+
+async function generateCorporateUserid() {
+  const min = 200000; // 예시로 200000부터 시작하도록 설정
+  const max = 299999; // 예시로 299999까지 범위 설정
+  let randomCorporateUserNumber = Math.floor(Math.random() * (max - min + 1) + min);
+
+  // 중복 체크
+  while (usedCorporateUserNumbers.has(randomCorporateUserNumber)) {
+    randomCorporateUserNumber = Math.floor(Math.random() * (max - min + 1) + min);
+  }
+
+  // 중복이 없으면 Set에 추가
+  usedCorporateUserNumbers.add(randomCorporateUserNumber);
+
+  return randomCorporateUserNumber;
+}
 //-------------------------------로그인-----------------------------------------------
 
 //-------------------------------익스플로스 세션 0213------------------------------------
@@ -433,31 +451,34 @@ app.post("/login", async (req, res) => {
 });
 //-------------------------------회원가입----------------------------------------------
 app.post("/regester", async (req, res) => {
-  const { username, password, email, address, detailedaddress, phonenumber, usertype } = req.body;
+  // 클라이언트에서 받은 요청의 body에서 필요한 정보를 추출합니다.
+  const { username, password, email, address, detailedaddress, phonenumber, usertype: clientUsertype } = req.body;
 
   try {
-    // 비밀번호를 해시화
+    // 비밀번호를 해시화합니다.
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 회원번호 생성 (6자리)
+    // 회원번호를 생성합니다. (6자리)
     const userid = await generateUserid();
 
-    // 회원번호 생성 (1,2,3 중 하나)
+    // 클라이언트에서 받은 usertype을 서버에서 사용하는 usertype으로 변환합니다.
     const usertypeNumber = {
       personal: 1, // 개인
       business: 2, // 기업
       organization: 3, // 단체
     };
 
-    const usertype = usertypeNumber[usertype];
+    const serverUsertype = usertypeNumber[clientUsertype];
 
+    // MySQL 쿼리를 작성하여 회원 정보를 데이터베이스에 삽입합니다.
     const sql =
       "INSERT INTO user (userid, username, email, password, address, detailedaddress, phonenumber, usertype) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     connection.query(
       sql,
-      [userid, username, email, hashedPassword, address, detailedaddress, phonenumber, usertype],
+      [userid, username, email, hashedPassword, address, detailedaddress, phonenumber, serverUsertype],
       (err, result) => {
         if (err) {
+          // 쿼리 실행 중 에러가 발생한 경우 에러를 처리합니다.
           console.error("MySQL에 데이터 삽입 중 오류:", err);
           return res.status(500).json({
             success: false,
@@ -465,15 +486,17 @@ app.post("/regester", async (req, res) => {
             error: err.message,
           });
         }
+        // 회원가입이 성공한 경우 응답을 클라이언트에게 보냅니다.
         console.log("사용자가 성공적으로 등록됨");
         return res.status(200).json({
           success: true,
           message: "사용자가 성공적으로 등록됨",
-          usertype,
+          usertype: serverUsertype,
         });
       }
     );
   } catch (error) {
+    // 회원가입 중 다른 내부적인 오류가 발생한 경우 에러를 처리합니다.
     console.error("회원가입 중 오류:", error);
     return res.status(500).json({
       success: false,

@@ -14,7 +14,7 @@ function Regester() {
   const [address, setAddress] = useState('');
   const [detailedaddress, setdetailedaddress] = useState('');
   const [phonenumber, setphonenumber] = useState('');
-
+  const [usertype, setUsertype] = useState('personal'); // 'usertype' 상태 변수 초기화
   const handle = handlePostcode(openPostcode, setOpenPostcode, setAddress);
 
 
