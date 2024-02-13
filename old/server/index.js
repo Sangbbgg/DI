@@ -347,10 +347,9 @@ app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    // 이메일을 사용하여 데이터베이스에서 사용자를 찾습니다.
     connection.query(
-      // "SELECT * FROM login WHERE email = ?",
-      "SELECT usertype, userNumber, password FROM login WHERE email = ?",
-      //login 테이블에서 email를 가진 사용자의 usertype, userNumber, password를 선택하는 쿼리문
+      "SELECT * FROM login WHERE email = ?",
       [email],
       async (err, result) => {
         if (err) {
@@ -363,8 +362,7 @@ app.post("/login", async (req, res) => {
               result[0].password
             );
             if (isPasswordMatch) {
-              const{usertype,userNumber}=result[0];
-              res.send({ success: true, message: "로그인 성공", data: {usertype,userNumber}});
+              res.send({ success: true, message: "로그인 성공", data: result[0]});
             } else {
               res.send({
                 success: false,

@@ -9,9 +9,6 @@ function LoginPage() {
   const navigate = useNavigate();
   const [loginStatus,setloginStatus]= useState('');
 
-
-
-  
   const LoginPageJs = () => {
     console.log('LoginPageJs 함수 호출됨');
   
