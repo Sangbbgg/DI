@@ -57,6 +57,12 @@ const connection = mysql.createConnection({
   password: "1234",
   database: "ezteam2",
   port: 5005,
+
+  // host: "192.168.45.188",
+  // user: "root",
+  // password: "1234",
+  // database: "ezteam2",
+  // port: 5005,
 });
 
 // 프로미스 기반 MySQL 연결 설정
@@ -377,6 +383,28 @@ app.post("/login", async (req, res) => {
         }
       }
     );
+    // 이메일을 사용하여 데이터베이스에서 사용자를 찾습니다.
+    connection.query("SELECT * FROM login WHERE email = ?", [email], async (err, result) => {
+      if (err) {
+        console.error("서버에서 에러 발생:", err);
+        res.status(500).send({ success: false, message: "서버 에러 발생" });
+      } else {
+        if (result.length > 0) {
+          const isPasswordMatch = await bcrypt.compare(password, result[0].password);
+          if (isPasswordMatch) {
+            res.send({ success: true, message: "로그인 성공", data: result });
+            
+          } else {
+            res.send({
+              success: false,
+              message: "비밀번호가 일치하지 않습니다.",
+            });
+          }
+        } else {
+          res.send({ success: false, message: "유저 정보가 없습니다." });
+        }
+      }
+    });
   } catch (error) {
     console.error("비밀번호 비교 중 오류:", error);
     res.status(500).send({ success: false, message: "서버 에러 발생" });
@@ -384,15 +412,7 @@ app.post("/login", async (req, res) => {
 });
 //-------------------------------회원가입----------------------------------------------
 app.post("/regester", async (req, res) => {
-  const {
-    username,
-    password,
-    email,
-    address,
-    Detailedaddress,
-    phoneNumber,
-    usertype,
-  } = req.body;
+  const { username, password, email, address, Detailedaddress, phoneNumber, usertype } = req.body;
 
   try {
     // 비밀번호를 해시화
@@ -414,16 +434,7 @@ app.post("/regester", async (req, res) => {
       "INSERT INTO login (userNumber, username, email, password, address, Detailedaddress, phoneNumber, usertype) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     connection.query(
       sql,
-      [
-        userNumber,
-        username,
-        email,
-        hashedPassword,
-        address,
-        Detailedaddress,
-        phoneNumber,
-        usertype,
-      ],
+      [userNumber, username, email, hashedPassword, address, Detailedaddress, phoneNumber, usertype],
       (err, result) => {
         if (err) {
           console.error("MySQL에 데이터 삽입 중 오류:", err);
@@ -479,8 +490,7 @@ app.get("/question", (req, res) => {
 app.put("/question", (req, res) => {
   const response = req.body.response;
   const questionid = req.body.questionid;
-  const sqlQuery =
-    "UPDATE PRSHOP.QUESTION SET response = ? WHERE questionid = ?;";
+  const sqlQuery = "UPDATE PRSHOP.QUESTION SET response = ? WHERE questionid = ?;";
   connection.query(sqlQuery, [response, questionid], (err, result) => {
     if (err) {
       console.error("Database error:", err);

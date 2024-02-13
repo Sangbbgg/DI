@@ -1,7 +1,7 @@
 import React, { PureComponent } from "react";
 import { PieChart, Pie, Sector, Cell, ResponsiveContainer } from "recharts";
 
-const renderActiveShape = (props) => {
+const PieChartComponent = (props) => {
   const RADIAN = Math.PI / 180;
   const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
   const sin = Math.sin(-RADIAN * midAngle);
@@ -49,7 +49,7 @@ const renderActiveShape = (props) => {
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#FF9752", "#FF8042"];
 
-export default class chartForm extends PureComponent {
+export default class piChartForm extends PureComponent {
   static demoUrl = "https://codesandbox.io/s/pie-chart-with-customized-active-shape-y93si";
 
   state = {
@@ -70,7 +70,7 @@ export default class chartForm extends PureComponent {
         <PieChart>
           <Pie
             activeIndex={this.state.activeIndex}
-            activeShape={renderActiveShape} // Active shape 커스텀 렌더링 함수 사용
+            activeShape={PieChartComponent} // Active shape 커스텀 렌더링 함수 사용
             data={data}
             cx="50%"
             cy="50%"
