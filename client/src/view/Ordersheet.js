@@ -1,5 +1,5 @@
-import { Link, useLocation } from "react-router-dom";
-import { useEffect, useState, useNavigate } from "react"; //useNavigate 추가
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react"; //useNavigate 추가
 
 import Modal from "react-modal"; // 팝업 라이브러리
 
@@ -36,21 +36,24 @@ const Ordersheet = () => {
   // 3. switch => orderType, 즉 주문 형식에 따라 사용자에게 보여줄 상품들의 리스트를 설정한다.
   useEffect(() => {
     if (!location.state) {
-      navigate("/shop");
-      return alert("잘못된 접근입니다!");
+      alert("잘못된 접근입니다!");
+      return navigate("/shop");
     } else {
       const orderTypeData = location.state;
       const { orderType } = orderTypeData;
 
       // 브라우저 스토리지에서 사용자 정보를 가져옴.
       // 로그인 구현 여부에 따라 추후 수정 필요
-      const getUserData = JSON.parse(localStorage.getItem("user"));
-      const { id } = { ...getUserData[0] };
+      const getUserData = JSON.parse(sessionStorage.getItem("userData"));
+      const { userNumber } = { ...getUserData };
+      console.log(userNumber);
 
       // 사용자의 기본 정보를 불러오는 부분, 로그인 구현 후 추후 검토 필요
-      // axios
-      //   .get("http://localhost:8000/ordersheet", { params: { userId: id } })
-      //   .then((data) => setUserInfo(data.data[0]));
+      axios
+        .get("http://localhost:8000/ordersheet", {
+          params: { userId: userNumber },
+        })
+        .then((data) => setUserInfo(data.data[0]));
 
       switch (orderType) {
         case "single_order":
@@ -80,11 +83,11 @@ const Ordersheet = () => {
   };
 
   // "주문자 정보 가져오기" 버튼 핸들러, 각 상태에 사용자 정보를 저장하고 갱신함.
-  // const onClickLoadRecipient = () => {
-  //   setNameInfo(userInfo.name);
-  //   setPhoneNumberInfo(userInfo.phoneNumber);
-  //   setAddressInfo(userInfo.address);
-  // };
+  const onClickLoadRecipient = () => {
+    setNameInfo(userInfo.username);
+    setPhoneNumberInfo(userInfo.phoneNumber);
+    setAddressInfo(userInfo.address);
+  };
 
   // 포인트 사용량 핸들러
   // const onChangeUsePoint = (e) => {
@@ -130,7 +133,7 @@ const Ordersheet = () => {
 
     // createOrderNumber에는 주문번호를 생성한다.
     const createOrderNumber =
-      // String(userInfo.id) + 로그인 정보 필요
+      String(userInfo.userNumber) + // 로그인 정보 필요
       String(date.getFullYear()) +
       String(date.getMonth() + 1) +
       String(date.getDate()) +
@@ -150,7 +153,7 @@ const Ordersheet = () => {
       reqOrderSheet.push({
         ...data,
         orderNumber: createOrderNumber,
-        // userId: userInfo.id,  로그인 정보 필요
+        userId: userInfo.userNumber, //로그인 정보 필요
         productCode: data.id,
         name: nameInfo,
         addr: addressInfo,
@@ -207,7 +210,7 @@ const Ordersheet = () => {
               <input
                 type="button"
                 value={"주문자 정보 가져오기"}
-                // onClick={onClickLoadRecipient}
+                onClick={onClickLoadRecipient}
               />
               <p></p>
               <label for="full_name">수령인 이름: </label>

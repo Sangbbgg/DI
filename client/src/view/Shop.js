@@ -1,8 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import styles from "./shop.module.css";
-import Paging from "../components/Paging";
+// import styles from "./shop.module.css"; //테스트를 위해 비활성화
+import Paging from "../Compornents/Paging";
 
 const Shop = () => {
   // const sessionPage = window.sessionStorage.getItem('page');
