@@ -10,7 +10,8 @@ import { useState } from "react";
 // sb-43xagx29080090@personal.example.com
 // l,28@SXn
 
-const MY_PAYPAL_KEY = "페이팔 client-id";
+const MY_PAYPAL_KEY =
+  "AZEh01o-yVFl957KTW72L1B3LiPyGN5Z5IJV2xTcDEfE3pBsbwt59kPiqvUbBmAacAtEmo0t9x0mzRdT";
 
 function Message({ content }) {
   return <p>{content}</p>;

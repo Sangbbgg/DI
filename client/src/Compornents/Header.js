@@ -41,6 +41,14 @@ function Header() {
           <br />
         </>
       )}
+      {/* 20240213 테스트 추가_이기현 */}
+      <button>
+        <Link to="/cart">장바구니</Link>
+      </button>
+      <button>
+        <Link to="/shop">상점</Link>
+      </button>
+      {/* ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ이기현 */}
     </div>
   );
 }

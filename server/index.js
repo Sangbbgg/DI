@@ -111,17 +111,24 @@ app.use("/api/carbonFootprint", carbonFootprintRouter);
 // const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
 // ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
+const PAYPAL_CLIENT_ID =
+  "AZEh01o-yVFl957KTW72L1B3LiPyGN5Z5IJV2xTcDEfE3pBsbwt59kPiqvUbBmAacAtEmo0t9x0mzRdT";
+const PAYPAL_CLIENT_SECRET =
+  "EJGeViT1jFj1g2V1Gtn2DM_M5DbVbn-HkGF9PNZ4x-Zy4fNB5KF067kt0NMjMZ8OE23FH3xAhdXj5dvb";
+
 const base = "https://api-m.sandbox.paypal.com"; // 페이팔 api 주소
 
 // orders 테이블이 존재하지 않을 경우 생성 쿼리문
+// FOREIGN KEY 추가
 const createOrdersTableQuery = `CREATE TABLE IF NOT EXISTS orders (
   id INT AUTO_INCREMENT PRIMARY KEY,
   orderNumber VARCHAR(40) NOT NULL,
   userId INT NOT NULL,
+  FOREIGN KEY (userId) REFERENCES login(userNumber),
   productCode VARCHAR(40) NOT NULL,
   status VARCHAR(20) DEFAULT "주문완료",
   date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  name VARCHAR(100) NOT NULL,
+  orderName VARCHAR(100) NOT NULL,
   zipcode VARCHAR(10),
   addr VARCHAR(255) NOT NULL,
   addrDetail VARCHAR(255),
@@ -134,149 +141,149 @@ const createOrdersTableQuery = `CREATE TABLE IF NOT EXISTS orders (
   refundText VARCHAR(255),
   usePoint INT DEFAULT 0,
   imageURL VARCHAR(600)
-)`;
+);`;
 
 connection.query(createOrdersTableQuery); // orders 테이블 생성
 
 // 여기서부터 Paypal API 채용 코드  ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 // 현재는 PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET 데이터 값이 없어 오류가 나므로 모두 주석처리
 // paypal API 인증 토큰 발급
-// const generateAccessToken = async () => {
-//   try {
-//     if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
-//       throw new Error("MISSING_API_CREDENTIALS");
-//     }
+const generateAccessToken = async () => {
+  try {
+    if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
+      throw new Error("MISSING_API_CREDENTIALS");
+    }
 
-//     // 인증키 암호화
-//     const auth = Buffer.from(
-//       PAYPAL_CLIENT_ID + ":" + PAYPAL_CLIENT_SECRET
-//     ).toString("base64");
+    // 인증키 암호화
+    const auth = Buffer.from(
+      PAYPAL_CLIENT_ID + ":" + PAYPAL_CLIENT_SECRET
+    ).toString("base64");
 
-//     // paypal 서버에 데이터 전송 및 응답
-//     const response = await fetch(`${base}/v1/oauth2/token`, {
-//       method: "POST",
-//       body: "grant_type=client_credentials",
-//       headers: {
-//         Authorization: `Basic ${auth}`,
-//       },
-//     });
+    // paypal 서버에 데이터 전송 및 응답
+    const response = await fetch(`${base}/v1/oauth2/token`, {
+      method: "POST",
+      body: "grant_type=client_credentials",
+      headers: {
+        Authorization: `Basic ${auth}`,
+      },
+    });
 
-//     const data = await response.json();
-//     return data.access_token;
-//   } catch (error) {
-//     console.error("Failed to generate Access Token:", error);
-//   }
-// };
+    const data = await response.json();
+    return data.access_token;
+  } catch (error) {
+    console.error("Failed to generate Access Token:", error);
+  }
+};
 
-// /**
-//  * Create an order to start the transaction.
-//  * @see https://developer.paypal.com/docs/api/orders/v2/#orders_create
-//  */
-// const createOrder = async (cart) => {
-//   // use the cart information passed from the front-end to calculate the purchase unit details
-//   console.log(
-//     "shopping cart information passed from the frontend createOrder() callback:",
-//     cart
-//   );
+/**
+ * Create an order to start the transaction.
+ * @see https://developer.paypal.com/docs/api/orders/v2/#orders_create
+ */
+const createOrder = async (cart) => {
+  // use the cart information passed from the front-end to calculate the purchase unit details
+  console.log(
+    "shopping cart information passed from the frontend createOrder() callback:",
+    cart
+  );
 
-//   let sumAmount = 0;
-//   const accessToken = await generateAccessToken(); // accessToken 발급받기
-//   const url = `${base}/v2/checkout/orders`;
+  let sumAmount = 0;
+  const accessToken = await generateAccessToken(); // accessToken 발급받기
+  const url = `${base}/v2/checkout/orders`;
 
-//   cart.map((item) => (sumAmount += item.price * item.count));
-//   sumAmount = Math.ceil(sumAmount / 1332.7); // 1332.7 달러환율을 의미
+  cart.map((item) => (sumAmount += item.price * item.count));
+  sumAmount = Math.ceil(sumAmount / 1332.7); // 1332.7 달러환율을 의미
 
-//   // paypal 청구서 정보
-//   const payload = {
-//     intent: "CAPTURE",
-//     purchase_units: [
-//       {
-//         amount: {
-//           currency_code: "USD",
-//           value: sumAmount,
-//         },
-//       },
-//     ],
-//   };
+  // paypal 청구서 정보
+  const payload = {
+    intent: "CAPTURE",
+    purchase_units: [
+      {
+        amount: {
+          currency_code: "USD",
+          value: sumAmount,
+        },
+      },
+    ],
+  };
 
-//   // paypal 서버에 청구서 동봉하여 데이터 전송 및 응답
-//   const response = await fetch(url, {
-//     headers: {
-//       "Content-Type": "application/json",
-//       Authorization: `Bearer ${accessToken}`,
-//       // Uncomment one of these to force an error for negative testing (in sandbox mode only). Documentation:
-//       // https://developer.paypal.com/tools/sandbox/negative-testing/request-headers/
-//       // "PayPal-Mock-Response": '{"mock_application_codes": "MISSING_REQUIRED_PARAMETER"}'
-//       // "PayPal-Mock-Response": '{"mock_application_codes": "PERMISSION_DENIED"}'
-//       // "PayPal-Mock-Response": '{"mock_application_codes": "INTERNAL_SERVER_ERROR"}'
-//     },
-//     method: "POST",
-//     body: JSON.stringify(payload),
-//   });
+  // paypal 서버에 청구서 동봉하여 데이터 전송 및 응답
+  const response = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+      // Uncomment one of these to force an error for negative testing (in sandbox mode only). Documentation:
+      // https://developer.paypal.com/tools/sandbox/negative-testing/request-headers/
+      // "PayPal-Mock-Response": '{"mock_application_codes": "MISSING_REQUIRED_PARAMETER"}'
+      // "PayPal-Mock-Response": '{"mock_application_codes": "PERMISSION_DENIED"}'
+      // "PayPal-Mock-Response": '{"mock_application_codes": "INTERNAL_SERVER_ERROR"}'
+    },
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
 
-//   return handleResponse(response);
-// };
+  return handleResponse(response);
+};
 
-// /**
-//  * Capture payment for the created order to complete the transaction.
-//  * @see https://developer.paypal.com/docs/api/orders/v2/#orders_capture
-//  */
-// const captureOrder = async (orderID) => {
-//   const accessToken = await generateAccessToken();
-//   const url = `${base}/v2/checkout/orders/${orderID}/capture`;
+/**
+ * Capture payment for the created order to complete the transaction.
+ * @see https://developer.paypal.com/docs/api/orders/v2/#orders_capture
+ */
+const captureOrder = async (orderID) => {
+  const accessToken = await generateAccessToken();
+  const url = `${base}/v2/checkout/orders/${orderID}/capture`;
 
-//   const response = await fetch(url, {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//       Authorization: `Bearer ${accessToken}`,
-//       // Uncomment one of these to force an error for negative testing (in sandbox mode only). Documentation:
-//       // https://developer.paypal.com/tools/sandbox/negative-testing/request-headers/
-//       // "PayPal-Mock-Response": '{"mock_application_codes": "INSTRUMENT_DECLINED"}'
-//       // "PayPal-Mock-Response": '{"mock_application_codes": "TRANSACTION_REFUSED"}'
-//       // "PayPal-Mock-Response": '{"mock_application_codes": "INTERNAL_SERVER_ERROR"}'
-//     },
-//   });
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+      // Uncomment one of these to force an error for negative testing (in sandbox mode only). Documentation:
+      // https://developer.paypal.com/tools/sandbox/negative-testing/request-headers/
+      // "PayPal-Mock-Response": '{"mock_application_codes": "INSTRUMENT_DECLINED"}'
+      // "PayPal-Mock-Response": '{"mock_application_codes": "TRANSACTION_REFUSED"}'
+      // "PayPal-Mock-Response": '{"mock_application_codes": "INTERNAL_SERVER_ERROR"}'
+    },
+  });
 
-//   return handleResponse(response);
-// };
+  return handleResponse(response);
+};
 
-// // 응답받은 데이터를 json() 변환
-// async function handleResponse(response) {
-//   try {
-//     const jsonResponse = await response.json();
-//     return {
-//       jsonResponse,
-//       httpStatusCode: response.status,
-//     };
-//   } catch (err) {
-//     const errorMessage = await response.text();
-//     throw new Error(errorMessage);
-//   }
-// }
+// 응답받은 데이터를 json() 변환
+async function handleResponse(response) {
+  try {
+    const jsonResponse = await response.json();
+    return {
+      jsonResponse,
+      httpStatusCode: response.status,
+    };
+  } catch (err) {
+    const errorMessage = await response.text();
+    throw new Error(errorMessage);
+  }
+}
 
-// app.post("/orders", async (req, res) => {
-//   try {
-//     // use the cart information passed from the front-end to calculate the order amount detals
-//     const { cart } = req.body;
-//     const { jsonResponse, httpStatusCode } = await createOrder(cart);
-//     res.status(httpStatusCode).json(jsonResponse);
-//   } catch (error) {
-//     console.error("Failed to create order:", error);
-//     res.status(500).json({ error: "Failed to create order." });
-//   }
-// });
+app.post("/orders", async (req, res) => {
+  try {
+    // use the cart information passed from the front-end to calculate the order amount detals
+    const { cart } = req.body;
+    const { jsonResponse, httpStatusCode } = await createOrder(cart);
+    res.status(httpStatusCode).json(jsonResponse);
+  } catch (error) {
+    console.error("Failed to create order:", error);
+    res.status(500).json({ error: "Failed to create order." });
+  }
+});
 
-// app.post("/orders/:orderID/capture", async (req, res) => {
-//   try {
-//     const { orderID } = req.params;
-//     const { jsonResponse, httpStatusCode } = await captureOrder(orderID);
-//     res.status(httpStatusCode).json(jsonResponse);
-//   } catch (error) {
-//     console.error("Failed to create order:", error);
-//     res.status(500).json({ error: "Failed to capture order." });
-//   }
-// });
+app.post("/orders/:orderID/capture", async (req, res) => {
+  try {
+    const { orderID } = req.params;
+    const { jsonResponse, httpStatusCode } = await captureOrder(orderID);
+    res.status(httpStatusCode).json(jsonResponse);
+  } catch (error) {
+    console.error("Failed to create order:", error);
+    res.status(500).json({ error: "Failed to capture order." });
+  }
+});
 // ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
 // DB order 테이블에 사용자의 주문서 등록
@@ -284,7 +291,7 @@ app.post("/reqOrder", async (req, res, next) => {
   try {
     const { orderSheet } = req.body;
     const query =
-      "INSERT INTO orders (orderNumber, userId, productCode, name, addr, phoneNumber, reqMessage, count, totalCount, totalAmount, payment, usePoint,imageURL) VALUES (?)";
+      "INSERT INTO orders (orderNumber, userId, productCode, orderName, addr, phoneNumber, reqMessage, count, totalCount, totalAmount, payment, usePoint) VALUES (?)";
 
     orderSheet.map(async (article) => {
       console.log(article);
@@ -301,7 +308,7 @@ app.post("/reqOrder", async (req, res, next) => {
         article.totalAmount,
         article.payment,
         article.usePoint,
-        article.imageURL,
+        // article.imageURL,
       ];
 
       await PromiseConnection.query(query, [data]);
@@ -318,8 +325,9 @@ app.post("/reqOrder", async (req, res, next) => {
 app.get("/ordersheet", async (req, res, next) => {
   try {
     const { userId } = req.query;
+    console.log(userId);
     const [userData] = await PromiseConnection.query(
-      "SELECT id, name, phoneNumber, address, point FROM user WHERE id = ?",
+      "SELECT username, phoneNumber, address, userNumber FROM login WHERE userNumber = ?",
       [userId]
     );
     return res.send(userData);
@@ -383,14 +391,20 @@ app.post("/login", async (req, res) => {
 
   try {
     // 이메일을 사용하여 데이터베이스에서 사용자를 찾습니다.
-    connection.query("SELECT * FROM user WHERE email = ?", [email], async (err, result) => {
-      if (err) {
-        console.error("서버에서 에러 발생:", err);
-        res.status(500).send({ success: false, message: "서버 에러 발생" });
-      } else {
-        if (result.length > 0) {
-          const isPasswordMatch = await bcrypt.compare(password, result[0].password);
-          if (isPasswordMatch) {
+    connection.query(
+      "SELECT * FROM user WHERE email = ?",
+      [email],
+      async (err, result) => {
+        if (err) {
+          console.error("서버에서 에러 발생:", err);
+          res.status(500).send({ success: false, message: "서버 에러 발생" });
+        } else {
+          if (result.length > 0) {
+            const isPasswordMatch = await bcrypt.compare(
+              password,
+              result[0].password
+            );
+            if (isPasswordMatch) {
             // 0213 김민호 세션스토리 초기화 확인
             if (!req.session) {
               req.session = {};
@@ -399,19 +413,19 @@ app.post("/login", async (req, res) => {
             req.session.usertype = result[0].usertype;//0213 김민호 익스플로우 세션기능 추가
             req.session.userid = result[0].userid;//0213 김민호 익스플로우 세션기능 추가
 
-            res.send({ success: true, message: "로그인 성공", data: result });
-            
+              res.send({ success: true, message: "로그인 성공", data: result });
+            } else {
+              res.send({
+                success: false,
+                message: "비밀번호가 일치하지 않습니다.",
+              });
+            }
           } else {
-            res.send({
-              success: false,
-              message: "비밀번호가 일치하지 않습니다.",
-            });
+            res.send({ success: false, message: "유저 정보가 없습니다." });
           }
-        } else {
-          res.send({ success: false, message: "유저 정보가 없습니다." });
         }
       }
-    });
+    );
   } catch (error) {
     console.error("비밀번호 비교 중 오류:", error);
     res.status(500).send({ success: false, message: "서버 에러 발생" });
@@ -472,7 +486,8 @@ app.post("/regester", async (req, res) => {
 
 // products테이블의 데이터를 /shop 경로로 전달
 app.get("/shop", (req, res) => {
-  const sqlQuery = "SELECT * FROM PRSHOP.PRODUCTS;";
+  const sqlQuery = "SELECT * FROM ezteam2.sample_product;"; // <<테스트용 추가 코드_이기현
+  // const sqlQuery = "SELECT * FROM PRSHOP.PRODUCTS;"; << 원본
   connection.query(sqlQuery, (err, result) => {
     res.send(result);
   });
@@ -497,7 +512,8 @@ app.get("/question", (req, res) => {
 app.put("/question", (req, res) => {
   const response = req.body.response;
   const questionid = req.body.questionid;
-  const sqlQuery = "UPDATE PRSHOP.QUESTION SET response = ? WHERE questionid = ?;";
+  const sqlQuery =
+    "UPDATE PRSHOP.QUESTION SET response = ? WHERE questionid = ?;";
   connection.query(sqlQuery, [response, questionid], (err, result) => {
     if (err) {
       console.error("Database error:", err);
