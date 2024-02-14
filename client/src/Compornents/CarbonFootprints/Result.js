@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import PiChart from "./Result/piChartData";
 import BarChart from "./Result/barChart";
 import TargetBarchart from "./Result/targetBarchart";
 import TargetBarchartTotal from "./Result/targetBarchartTotal";
-import { useNavigate } from "react-router-dom";
+import ComprehensiveChart from "./Result/comprehensiveChart";
 
-function Result({ initialData, resultData, userData }) {
+import { useNavigate } from "react-router-dom";
+import html2canvas from "html2canvas";
+
+function Result({ initialData, resultData, userData, isTransportationOption }) {
   const navigate = useNavigate();
+
   const [barChatData, setBarChatData] = useState([]);
   const [selectTargetTap, setSelectSubTap] = useState("electricity");
 
@@ -23,10 +27,31 @@ function Result({ initialData, resultData, userData }) {
 
   const hasResultData = resultData && resultData.calculation_month;
 
+  // Ref를 생성하여 캡처하고자 하는 요소에 할당
+  const captureRef = useRef(null);
+
+  // 캡처 및 이미지 저장 함수
+  const saveAsImage = () => {
+    if (captureRef.current) {
+      html2canvas(captureRef.current).then((canvas) => {
+        // 캔버스를 이미지로 변환
+        const image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+
+        // 이미지 다운로드
+        const link = document.createElement("a");
+        link.download = "result.png";
+        link.href = image;
+        link.click();
+      });
+    }
+  };
+
+  // console.log("??", hasResultData);
   // console.log("유저 결과 :", userData);
   // console.log("추천 실천과제 :", initialData);
   // console.log("resultData :", resultData);
-  // console.log("targetEmissions :", targetEmissions);
+  // console.log("targetEmissions :", targetEmissions.transportation);
+  // console.log("교통 라디오 옵션(차량없음) :", isTransportationOption);
   // console.log("barChatData :", barChatData);
   // console.log("barChatDataTotal :", categorySavings);
   // const userId = 104716;
@@ -51,14 +76,22 @@ function Result({ initialData, resultData, userData }) {
 
   const colors = ["#316EE6", "#FE7713", "#A364FF", "#FE5A82", "#4ACC9C", "#FF8042"];
   const maxValues = [14.1, 42.9, 4.9, 90.9, 14.6];
+
   // useEffect를 컴포넌트 최상위 수준으로 이동
   useEffect(() => {
-    // 서버로부터 받은 데이터를 상태에 설정
-    const fetchedCheckedItems = JSON.parse(resultData.checked_items);
-    const fetchedCategorySavings = JSON.parse(resultData.category_savings);
+    if (hasResultData) {
+      // 서버로부터 받은 데이터를 상태에 설정
+      const newCheckedItems = JSON.parse(resultData.checked_items || "{}");
+      const newCategorySavings = JSON.parse(resultData.category_savings || "{}");
 
-    setCheckedItems(fetchedCheckedItems);
-    setCategorySavings(fetchedCategorySavings);
+      if (JSON.stringify(checkedItems) !== JSON.stringify(newCheckedItems)) {
+        setCheckedItems(newCheckedItems);
+      }
+
+      if (JSON.stringify(categorySavings) !== JSON.stringify(newCategorySavings)) {
+        setCategorySavings(newCategorySavings);
+      }
+    }
 
     const convertToChartData = (resultData, averageData, labels, colors, targetEmissions) => {
       return Object.keys(labels).map((key, index) => {
@@ -77,7 +110,21 @@ function Result({ initialData, resultData, userData }) {
       const data = convertToChartData(resultData, averageData, labels, colors, targetEmissions);
       setBarChatData(data);
     }
-  }, [resultData, targetEmissions, checkedItems, categorySavings]);
+  }, [resultData, targetEmissions]);
+
+  useEffect(() => {
+    // 감소목표 카테고리 분류
+    const categories = ["electricity", "gas", "water", "transportation", "waste"];
+
+    const updatedTargetEmissions = categories.reduce((acc, category) => {
+      acc[category] = calculateTargetEmissions(resultData, categorySavings, category);
+      return acc;
+    }, {});
+
+    // console.log("Updated Target Emissions: ", updatedTargetEmissions);
+
+    setTargetEmission(updatedTargetEmissions);
+  }, [categorySavings]);
 
   function transformDataToBarChart(categorySavings) {
     // 카테고리 키를 배열로 변환합니다.
@@ -222,127 +269,174 @@ function Result({ initialData, resultData, userData }) {
     return Math.max(0, resultData[category] - categorySavings[category]).toFixed(1);
   }
 
-  useEffect(() => {
-    // 감소목표 카테고리 분류
-    const categories = ["electricity", "gas", "water", "transportation", "waste"];
+  const data11 = [
+    {
+      subject: 'Math',
+      A: 120,
+      B: 110,
+      fullMark: 150,
+    },
+    {
+      subject: 'Chinese',
+      A: 98,
+      B: 130,
+      fullMark: 150,
+    },
+    {
+      subject: 'English',
+      A: 86,
+      B: 130,
+      fullMark: 150,
+    },
+    {
+      subject: 'Geography',
+      A: 99,
+      B: 100,
+      fullMark: 150,
+    },
+    {
+      subject: 'Physics',
+      A: 85,
+      B: 90,
+      fullMark: 150,
+    },
+    {
+      subject: 'History',
+      A: 65,
+      B: 85,
+      fullMark: 150,
+    },
+  ];
 
-    const updatedTargetEmissions = categories.reduce((acc, category) => {
-      acc[category] = calculateTargetEmissions(resultData, categorySavings, category);
-      return acc;
-    }, {});
 
-    // console.log("Updated Target Emissions: ", updatedTargetEmissions);
-
-    setTargetEmission(updatedTargetEmissions);
-  }, [categorySavings, resultData]);
 
   return (
     <div>
-      <section className="household_two_step">
-        <p>결과 페이지</p>
-      </section>
-      <div>
+      <div ref={captureRef}>
+        <section className="household_two_step">
+          <p>결과 페이지</p>
+        </section>
         <div>
-          <p>사용량 분석</p>
-        </div>
-        <div style={{ width: "100%" }}>
-          <PiChart data={data} />
           <div>
+            <p>사용량 분석</p>
+          </div>
+          <div style={{ width: "100%" }}>
+            <PiChart data={data} />
             <div>
               <div>
-                <h2>결과안내</h2>
-                <p>{userData.username}님의 이산화탄소(CO₂) 발생량 통계입니다.</p>
-              </div>
-              <p>
-                {userData.username}님의 가정은 이산화탄소 배출량은 총 {resultData.total}kg 이며, 비슷한 다른 가정 평균 {averageData.total}kg 보다 약{" "}
-                {((resultData.total / averageData.total) * 100 - 100).toFixed(1)}% 더 많이 배출하고 있습니다. 아래의 그래프를 보고 어느 부분에서 이산화탄소를 많이 발생하고 있는지 비교해 보세요.
-              </p>
-              {!hasResultData && (
-                <>
-                  <button onClick={onClickCarbonFootprint}>탄소계산기 다시하기</button>
-                  <button onClick={onSaveClick}>저장</button>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="barChart-container">
-        {barChatData.map((data, index) => (
-          <div key={index} className="barChart">
-            <BarChart barChatData={[data]} />
-          </div>
-        ))}
-      </div>
-
-      <div>
-        <div>
-          <p>실천 목표</p>
-        </div>
-        <div style={{ width: "100%" }}>
-          <h2>우리집 실천목표! 생활 속에서 실천가능한 목표를 선택해주세요.</h2>
-        </div>
-        <div>
-          <ul>
-            {Object.keys(labels).map((key) => (
-              <li key={key} onClick={() => handleSubTapClick(key)}>
-                {labels[key]}
-              </li>
-            ))}
-          </ul>
-          {Object.keys(labels).map(
-            (label) =>
-              selectTargetTap === label && (
-                <div key={label}>
-                  <div>
-                    <div> {labels[label]}</div>
-                    {initialData
-                      .filter((item) => item.name === label)
-                      .map((filteredItem, index) => (
-                        <div key={index}>
-                          <label>
-                            <input
-                              type="checkbox"
-                              id={`${label}-${index}`}
-                              name={`${filteredItem.name}-${index}`}
-                              value={filteredItem.savings_value}
-                              // 체크 박스 추적관리
-                              checked={!!checkedItems[`${filteredItem.name}-${index}`]}
-                              // onChange 작성 부분
-                              onChange={handleCheckboxChange}
-                            />
-                            <span>{filteredItem.advice_text}</span>
-                          </label>
-                        </div>
-                      ))}
-                  </div>
-                  <div>
-                    <h3>부분별 실천목표</h3>
-                    {barChatData
-                      .filter((item) => item.name === labels[label])
-                      .map((filterBarchartItem, index) => (
-                        <div key={index} className="barChart" style={{ width: "70%" }}>
-                          <TargetBarchart barChatData={[filterBarchartItem]} />
-                        </div>
-                      ))}
-                  </div>
+                <div>
+                  <h2>결과안내</h2>
+                  <p>{userData.username}님의 이산화탄소(CO₂) 발생량 통계입니다.</p>
                 </div>
-              )
-          )}
-          <div>
-            <h3>월간 CO₂ 저감목표</h3>
-            <div className="barChart" style={{ width: "70%", height: "300px" }}>
-              <div style={{ width: "100%", height: "270px" }}>
-                <TargetBarchartTotal barChartDataTotal={barChartDataTotal} />
-              </div>
-              <div>
-                <span>총 합계 </span>
-                <span>{categorySavings.total}kg</span>
+                <p>
+                  {userData.username}님의 가정은 이산화탄소 배출량은 총 {resultData.total}kg 이며, 비슷한 다른 가정 평균{" "}
+                  {averageData.total}kg 보다 약 {((resultData.total / averageData.total) * 100 - 100).toFixed(1)}% 더
+                  많이 배출하고 있습니다. 아래의 그래프를 보고 어느 부분에서 이산화탄소를 많이 발생하고 있는지 비교해
+                  보세요.
+                </p>
+                {!hasResultData && (
+                  <>
+                    <button onClick={onClickCarbonFootprint}>탄소계산기 다시하기</button>
+                    <button onClick={onSaveClick}>저장</button>
+                  </>
+                )}
               </div>
             </div>
           </div>
         </div>
+        <div className="barChart-container">
+          {barChatData.map((data, index) => (
+            <div key={index} className="barChart">
+              <BarChart barChatData={[data]} />
+            </div>
+          ))}
+        </div>
+
+        <div>
+          <div>
+            <p>실천 목표</p>
+          </div>
+          <div style={{ width: "100%" }}>
+            <h2>우리집 실천목표! 생활 속에서 실천가능한 목표를 선택해주세요.</h2>
+          </div>
+          <div>
+            <ul>
+              {Object.keys(labels).map((key) => (
+                <li key={key} onClick={() => handleSubTapClick(key)}>
+                  {labels[key]}
+                </li>
+              ))}
+            </ul>
+            {Object.keys(labels).map(
+              (label) =>
+                selectTargetTap === label && (
+                  <div key={label}>
+                    <div>
+                      <div> {labels[label]}</div>
+                      {initialData
+                        .filter((item) => item.name === label)
+                        .map((filteredItem, index) => (
+                          <div key={index}>
+                            <label>
+                              <input
+                                type="checkbox"
+                                id={`${label}-${index}`}
+                                name={`${filteredItem.name}-${index}`}
+                                value={filteredItem.savings_value}
+                                // 체크 박스 추적관리
+                                checked={!!checkedItems[`${filteredItem.name}-${index}`]}
+                                // onChange 작성 부분
+                                onChange={handleCheckboxChange}
+                                disabled={
+                                  hasResultData || (filteredItem.name === "transportation" && isTransportationOption)
+                                }
+                              />
+                              <span>{filteredItem.advice_text}</span>
+                            </label>
+                          </div>
+                        ))}
+                    </div>
+                    <div>
+                      <h3>부분별 실천목표</h3>
+                      {barChatData
+                        .filter((item) => item.name === labels[label])
+                        .map((filterBarchartItem, index) => (
+                          <div key={index} className="barChart" style={{ width: "70%" }}>
+                            <TargetBarchart barChatData={[filterBarchartItem]} />
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )
+            )}
+            <div>
+              <h3>월간 CO₂ 저감목표</h3>
+              <div className="barChart" style={{ width: "70%", height: "300px" }}>
+                <div style={{ width: "100%", height: "270px" }}>
+                  <TargetBarchartTotal barChartDataTotal={barChartDataTotal} />
+                </div>
+                <div>
+                  <span>총 합계 </span>
+                  <span>{categorySavings.total}kg</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div>
+            <p>종합평가</p>
+          </div>
+          <div>
+            <h2>{userData.username}님의 종합평가입니다.</h2>
+          </div>
+          <div className="barChart" style={{ width: "70%", height: "300px" }}>
+            <ComprehensiveChart data={data11}/>
+          </div>
+        </div>
       </div>
+      <button onClick={saveAsImage}>이미지로 저장하기</button>
     </div>
   );
 }

@@ -14,11 +14,11 @@ export default class CustomBarChart extends PureComponent {
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={barChatData}
-          barGap={"30%"}
+          barGap={"10%"}
           margin={{
             top: 20,
-            right: 30,
-            left: 20,
+            right: 10,
+            left: 10,
             bottom: 5,
           }}
         >
@@ -32,7 +32,7 @@ export default class CustomBarChart extends PureComponent {
             dataKey="user"
             name={<span style={{ color: "black" }}>우리집</span>}
             fill={barChatData[0].color}
-            barSize={50}
+            barSize={20}
             label={{
               position: "top",
               formatter: (value) => `${value}kg`,
@@ -43,7 +43,7 @@ export default class CustomBarChart extends PureComponent {
             dataKey="average"
             name={<span style={{ color: "black" }}>다른집</span>}
             fill={`rgba(${parseInt(barChatData[0].color.slice(1, 3), 16)}, ${parseInt(barChatData[0].color.slice(3, 5), 16)}, ${parseInt(barChatData[0].color.slice(5, 7), 16)}, 0.5)`}
-            barSize={50}
+            barSize={20}
             label={{ position: "top", formatter: (value) => `${value}kg` }}
           />
 

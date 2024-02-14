@@ -13,9 +13,18 @@ function Consumption({ inputData, initialData, onResultSubmit }) {
     total: 0,
   });
 
-  // parent_category_id가 4인 데이터 필터링 및 정렬
-  const transportationOptions = initialData.filter((item) => item.parent_category_id === 4).sort((a, b) => a.id - b.id);
-  const wasteOptions = initialData.filter((item) => item.parent_category_id === 8).sort((a, b) => a.id - b.id);
+  const parent_category_id = {
+    transportation: 4,
+    waste: 8,
+  };
+
+  // parent_category_id가 transportation, waste인 데이터 필터링 및 정렬
+  const transportationOptions = initialData
+    .filter((item) => item.parent_category_id === parent_category_id.transportation)
+    .sort((a, b) => a.id - b.id);
+  const wasteOptions = initialData
+    .filter((item) => item.parent_category_id === parent_category_id.waste)
+    .sort((a, b) => a.id - b.id);
 
   // 교통 부분의 라디오 버튼 변경 핸들러
   const handleTransportChange = (e) => {
@@ -63,8 +72,9 @@ function Consumption({ inputData, initialData, onResultSubmit }) {
       alert("모든 사용량을 입력해 주세요");
       return; // 함수 실행 중단
     }
+
     const resultData = co2Emission; // 계산된 결과 데이터
-    onResultSubmit(resultData, inputValue);
+    onResultSubmit(resultData, inputValue, isTransportationOption);
   };
 
   // 화면에 처리 할 데이터 가공 함수
@@ -104,7 +114,7 @@ function Consumption({ inputData, initialData, onResultSubmit }) {
     const waterCost = transformCostFormula(initialData, "water");
     const transportationCost = transformCostFormula(initialData, "transportation");
     const wasteCost = transformCostFormula(initialData, "waste");
-    let transportationEmission = 0;
+    let transportationEmission = "";
     let wasteEmission = 0;
 
     // Transportation 계산
