@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import PiChart from "./Result/piChartData";
 import BarChart from "./Result/barChart";
 import TargetBarchart from "./Result/targetBarchart";
+import TargetBarchartTotal from "./Result/targetBarchartTotal";
 import { useNavigate } from "react-router-dom";
 
 function Result({ initialData, resultData, userData }) {
@@ -11,7 +12,14 @@ function Result({ initialData, resultData, userData }) {
 
   const [targetEmissions, setTargetEmission] = useState(resultData);
   const [checkedItems, setCheckedItems] = useState({});
-  const [savingValue, setSavingValue] = useState({});
+  const [categorySavings, setCategorySavings] = useState({
+    electricity: 0,
+    gas: 0,
+    water: 0,
+    transportation: 0,
+    waste: 0,
+    total: 0,
+  });
 
   const hasResultData = resultData && resultData.calculation_month;
 
@@ -20,6 +28,7 @@ function Result({ initialData, resultData, userData }) {
   // console.log("resultData :", resultData);
   // console.log("targetEmissions :", targetEmissions);
   // console.log("barChatData :", barChatData);
+  // console.log("barChatDataTotal :", categorySavings);
   // const userId = 104716;
 
   const averageData = {
@@ -40,10 +49,17 @@ function Result({ initialData, resultData, userData }) {
     waste: "폐기물",
   };
 
-  const colors = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#FF9752", "#FF8042"];
-
+  const colors = ["#316EE6", "#FE7713", "#A364FF", "#FE5A82", "#4ACC9C", "#FF8042"];
+  const maxValues = [14.1, 42.9, 4.9, 90.9, 14.6];
   // useEffect를 컴포넌트 최상위 수준으로 이동
   useEffect(() => {
+    // 서버로부터 받은 데이터를 상태에 설정
+    const fetchedCheckedItems = JSON.parse(resultData.checked_items);
+    const fetchedCategorySavings = JSON.parse(resultData.category_savings);
+
+    setCheckedItems(fetchedCheckedItems);
+    setCategorySavings(fetchedCategorySavings);
+
     const convertToChartData = (resultData, averageData, labels, colors, targetEmissions) => {
       return Object.keys(labels).map((key, index) => {
         const targetKey = key; // labels 객체의 키와 targetEmissions 객체의 키가 서로 매치되어야 함
@@ -61,7 +77,32 @@ function Result({ initialData, resultData, userData }) {
       const data = convertToChartData(resultData, averageData, labels, colors, targetEmissions);
       setBarChatData(data);
     }
-  }, [resultData, targetEmissions]);
+  }, [resultData, targetEmissions, checkedItems, categorySavings]);
+
+  function transformDataToBarChart(categorySavings) {
+    // 카테고리 키를 배열로 변환합니다.
+    const categoryKeys = Object.keys(categorySavings);
+
+    // 결과 배열을 생성합니다.
+    const barChartDataTotal = categoryKeys
+      .map((key, index) => {
+        // 카테고리에 해당하는 레이블과 색상을 가져옵니다.
+        // total 키는 제외합니다.
+        if (key !== "total") {
+          return {
+            name: labels[key], // 레이블을 이름으로 사용
+            value: categorySavings[key].toFixed(1), // 해당 카테고리의 값
+            color: colors[index], // 순서에 따른 색상 할당
+            maxVlaue: maxValues[index],
+          };
+        }
+      })
+      .filter((item) => item !== undefined); // total 키로 생성된 undefined 값을 제거합니다.
+
+    return barChartDataTotal;
+  }
+
+  const barChartDataTotal = transformDataToBarChart(categorySavings);
 
   // 객체를 배열로 변환
   function convertDataToObject(resultData) {
@@ -102,7 +143,7 @@ function Result({ initialData, resultData, userData }) {
   const onSaveClick = async () => {
     const calculationMonth = new Date().toISOString().slice(0, 10); // 현재 날짜를 'YYYY-MM-DD' 형식으로 설정
     const postData = {
-      userId: userData.userNumber,
+      userId: userData.userid,
       electricity: resultData.electricity,
       gas: resultData.gas,
       water: resultData.water,
@@ -110,6 +151,8 @@ function Result({ initialData, resultData, userData }) {
       waste: resultData.waste,
       total: resultData.total,
       calculationMonth: calculationMonth,
+      checkedItems: checkedItems, // 체크된 항목들
+      categorySavings: categorySavings, // 각 카테고리별 절감량
     };
 
     try {
@@ -135,34 +178,64 @@ function Result({ initialData, resultData, userData }) {
     }
   };
 
+  //목표 분류템 선택
   const handleSubTapClick = (key) => {
     setSelectSubTap(key);
   };
 
   // 체크박스 변경 핸들러
   const handleCheckboxChange = (e) => {
-    const { id, checked, value } = e.target;
-  
-    // 현재 상태 복사
-    const currentEntry = { ...savingValue[id] };
-  
-    // 새 항목 추가 또는 업데이트
-    currentEntry[id] = checked ? value : 0;
-  
-  //   // 상태 업데이트
-  //   setSavingValue({
-  //     ...savingValue,
-  //     [id]: currentEntry,
-  //   });
-  
-  //   // 체크박스 상태 업데이트
-  //   setCheckedItems({
-  //     ...checkedItems,
-  //     [id]: checked,
-  //   });
+    const { name, value, checked } = e.target;
+    const [category, index] = name.split("-"); // 'electricity-0' -> ['electricity', '0']
+    const newValue = parseFloat(value);
+
+    // 체크 상태 업데이트
+    const updatedCheckedItems = {
+      ...checkedItems,
+      [name]: checked ? newValue : 0,
+    };
+    setCheckedItems(updatedCheckedItems);
+
+    // 분류별 총합 계산
+    const newCategorySavings = { ...categorySavings };
+    Object.keys(categorySavings).forEach((cat) => {
+      if (cat === category || cat === "total") {
+        // 현재 카테고리 또는 total일 경우 재계산
+        newCategorySavings[cat] = Object.keys(updatedCheckedItems)
+          .filter((key) => key.startsWith(cat))
+          .reduce((total, key) => total + (updatedCheckedItems[key] || 0), 0);
+      }
+    });
+
+    // total 값 업데이트 (total은 모든 카테고리의 합산)
+    const totalSavings = Object.keys(newCategorySavings)
+      .filter((key) => key !== "total") // 'total' 키를 제외하고 계산
+      .reduce((total, key) => total + newCategorySavings[key], 0);
+    newCategorySavings["total"] = totalSavings.toFixed(1);
+
+    // 분류별 절감량 상태 업데이트
+    setCategorySavings(newCategorySavings);
   };
-  // console.log("체크 :", checkedItems);
-  // console.log("체크 value :", savingValue);
+
+  // 초기값, 감소목표량 계산 함수
+  function calculateTargetEmissions(resultData, categorySavings, category) {
+    return Math.max(0, resultData[category] - categorySavings[category]).toFixed(1);
+  }
+
+  useEffect(() => {
+    // 감소목표 카테고리 분류
+    const categories = ["electricity", "gas", "water", "transportation", "waste"];
+
+    const updatedTargetEmissions = categories.reduce((acc, category) => {
+      acc[category] = calculateTargetEmissions(resultData, categorySavings, category);
+      return acc;
+    }, {});
+
+    // console.log("Updated Target Emissions: ", updatedTargetEmissions);
+
+    setTargetEmission(updatedTargetEmissions);
+  }, [categorySavings, resultData]);
+
   return (
     <div>
       <section className="household_two_step">
@@ -178,12 +251,11 @@ function Result({ initialData, resultData, userData }) {
             <div>
               <div>
                 <h2>결과안내</h2>
-                <p>{userData.userName}님의 이산화탄소(CO₂) 발생량 통계입니다.</p>
+                <p>{userData.username}님의 이산화탄소(CO₂) 발생량 통계입니다.</p>
               </div>
               <p>
-                {userData.userName}님의 가정은 이산화탄소 배출량은 총 {resultData.total}kg 이며, 비슷한 다른 가정 평균{" "}
-                {averageData.total}kg 보다 약 {((resultData.total / averageData.total) * 100 - 100).toFixed(1)}% 더 많이
-                배출하고 있습니다. 아래의 그래프를 보고 어느 부분에서 이산화탄소를 많이 발생하고 있는지 비교해 보세요.
+                {userData.username}님의 가정은 이산화탄소 배출량은 총 {resultData.total}kg 이며, 비슷한 다른 가정 평균 {averageData.total}kg 보다 약{" "}
+                {((resultData.total / averageData.total) * 100 - 100).toFixed(1)}% 더 많이 배출하고 있습니다. 아래의 그래프를 보고 어느 부분에서 이산화탄소를 많이 발생하고 있는지 비교해 보세요.
               </p>
               {!hasResultData && (
                 <>
@@ -199,7 +271,6 @@ function Result({ initialData, resultData, userData }) {
         {barChatData.map((data, index) => (
           <div key={index} className="barChart">
             <BarChart barChatData={[data]} />
-            {/* {console.log(data)} */}
           </div>
         ))}
       </div>
@@ -234,12 +305,11 @@ function Result({ initialData, resultData, userData }) {
                               type="checkbox"
                               id={`${label}-${index}`}
                               name={`${filteredItem.name}-${index}`}
-                              // name={filteredItem.name}
                               value={filteredItem.savings_value}
                               // 체크 박스 추적관리
-
+                              checked={!!checkedItems[`${filteredItem.name}-${index}`]}
                               // onChange 작성 부분
-
+                              onChange={handleCheckboxChange}
                             />
                             <span>{filteredItem.advice_text}</span>
                           </label>
@@ -253,7 +323,6 @@ function Result({ initialData, resultData, userData }) {
                       .map((filterBarchartItem, index) => (
                         <div key={index} className="barChart" style={{ width: "70%" }}>
                           <TargetBarchart barChatData={[filterBarchartItem]} />
-                          {/* {console.log("필터 데이터", filterBarchartItem)} */}
                         </div>
                       ))}
                   </div>
@@ -262,6 +331,15 @@ function Result({ initialData, resultData, userData }) {
           )}
           <div>
             <h3>월간 CO₂ 저감목표</h3>
+            <div className="barChart" style={{ width: "70%", height: "300px" }}>
+              <div style={{ width: "100%", height: "270px" }}>
+                <TargetBarchartTotal barChartDataTotal={barChartDataTotal} />
+              </div>
+              <div>
+                <span>총 합계 </span>
+                <span>{categorySavings.total}kg</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

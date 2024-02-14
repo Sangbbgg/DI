@@ -4,7 +4,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } fro
 export default class CustomBarChart extends PureComponent {
   render() {
     const { barChatData } = this.props;
-    // console.log("data", barChatData);
+
 
     const maxLeft = Math.max(...barChatData.map((item) => item.user));
     const maxRight = Math.max(...barChatData.map((item) => item.average));

@@ -47,7 +47,7 @@ const PieChartComponent = (props) => {
   );
 };
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#FF9752", "#FF8042"];
+const COLORS = ["#316EE6", "#FE7713", "#A364FF", "#FE5A82", "#4ACC9C", "#FF8042"];
 
 export default class piChartForm extends PureComponent {
   static demoUrl = "https://codesandbox.io/s/pie-chart-with-customized-active-shape-y93si";
