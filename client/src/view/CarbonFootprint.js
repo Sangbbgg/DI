@@ -9,14 +9,15 @@ function CarbonFootprint() {
   // const userId = 104716; //개발용 user_id
   const storedUserData = sessionStorage.getItem("userData");
   const userData = JSON.parse(storedUserData);
-  console.log("userData :",userData);
+
   const currentDate = new Date().toISOString().slice(0, 10); // 현재 날짜를 'YYYY-MM-DD' 형식으로
 
   const [activeTab, setActiveTab] = useState("consumption"); // 탭 핸들링
   const [userEmissionData, setUserData] = useState(null);
   const [newResultData, setNewResultData] = useState(null);
   const [initialData, setInitialData] = useState(null); // 초기 데이터 상태 추가
-  console.log("initialData :", initialData);
+  // console.log("initialData :", initialData);
+  const [isTransportationOption, setIsTransportationOption] = useState(null);
   const [consumptionData, setConsumptionData] = useState({
     electricity: "",
     gas: "",
@@ -80,7 +81,7 @@ function CarbonFootprint() {
     setActiveTab(tabName);
   };
 
-  const handleResultSubmit = (newResultData, inputData) => {
+  const handleResultSubmit = (newResultData, inputData, isTransportationOption) => {
     // 사용자가 데이터를 제출하면, 이를 userData에 반영하여 바로 "결과보기" 탭에서 사용할 수 있도록 합니다.
     // 이는 서버로부터 받은 userData가 있더라도, 사용자의 최신 제출을 반영하는 것을 우선합니다.
     setUserData({
@@ -88,6 +89,7 @@ function CarbonFootprint() {
       ...newResultData,
     });
     setConsumptionData(inputData);
+    setIsTransportationOption(isTransportationOption);
     setActiveTab("result");
   };
 
@@ -108,7 +110,14 @@ function CarbonFootprint() {
       case "result":
         // 서버의 userData가 있으면 그 값을, 없으면 로컬의 resultData를 사용
         const dataToShow = userEmissionData || newResultData;
-        return <Result initialData={initialData.calculationAdviceData} resultData={dataToShow} userData={userData} />;
+        return (
+          <Result
+            initialData={initialData.calculationAdviceData}
+            resultData={dataToShow}
+            userData={userData}
+            isTransportationOption={isTransportationOption}
+          />
+        );
       case "practice":
         return <Practice />;
       default:

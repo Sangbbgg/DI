@@ -16,13 +16,10 @@ router.get("/", async (req, res) => {
 
   // 두 번째 쿼리: calculation_advice에서 데이터 가져오기
   const calculationAdvice = new Promise((resolve, reject) => {
-    connection.query(
-      "SELECT a.name, b.advice_text, b.savings_value FROM calculation_category as a join calculation_advice as b ON a.id = b.category_id;",
-      (err, results) => {
-        if (err) reject(err);
-        else resolve(results);
-      }
-    );
+    connection.query("SELECT a.name, b.advice_text, b.savings_value FROM calculation_category as a join calculation_advice as b ON a.id = b.category_id;", (err, results) => {
+      if (err) reject(err);
+      else resolve(results);
+    });
   });
   const calculationAdviceData = await calculationAdvice;
 
@@ -79,21 +76,22 @@ router.get("/check/:userId/:date", async (req, res) => {
 
 // POST 라우트 추가
 router.post("/", async (req, res) => {
-  const { userId, calculationMonth, electricity, gas, water, transportation, waste, total } = req.body;
+  const { userId, calculationMonth, electricity, gas, water, transportation, waste, total, checkedItems, categorySavings } = req.body;
 
+  // JSON 형식의 데이터를 문자열로 변환
+  const checkedItemsString = JSON.stringify(checkedItems);
+  const categorySavingsString = JSON.stringify(categorySavings);
+
+  // const insertQuery = "INSERT INTO user_calculation (user_id, calculation_month, electricity, gas, water, transportation, waste, total) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
   const insertQuery =
-    "INSERT INTO user_calculation (user_id, calculation_month, electricity, gas, water, transportation, waste, total) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+    "INSERT INTO user_calculation (user_id, calculation_month, electricity, gas, water, transportation, waste, total, checked_items, category_savings) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
-  connection.query(
-    insertQuery,
-    [userId, calculationMonth, electricity, gas, water, transportation, waste, total],
-    (err, results) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).send({ message: "Error saving data to the database", error: err.message });
-      }
-      res.status(201).send({ message: "Data saved successfully", data: req.body });
+  connection.query(insertQuery, [userId, calculationMonth, electricity, gas, water, transportation, waste, total, checkedItemsString, categorySavingsString], (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send({ message: "Error saving data to the database", error: err.message });
     }
-  );
+    res.status(201).send({ message: "Data saved successfully", data: req.body });
+  });
 });
 module.exports = router;

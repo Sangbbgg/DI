@@ -13,7 +13,7 @@ export default class CustomBarChart extends PureComponent {
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={barChatData}
-          barGap={"50%"}
+          barGap={"10%"}
           margin={{
             top: 20,
             right: 30,
@@ -45,7 +45,7 @@ export default class CustomBarChart extends PureComponent {
             barSize={50}
             label={{ position: "top", formatter: (value) => `${value}kg` }}
           />
-          <Bar yAxisId="right" dataKey="target" name="목표" fill="#0064B5" barSize={50} label={{ position: "top", formatter: (value) => `${value}kg` }} />
+          <Bar yAxisId="right" dataKey="target" name={<span style={{ color: "black" }}>목표</span>} fill="#F4DD7C" barSize={50} label={{ position: "top", formatter: (value) => `${value}kg` }} />
         </BarChart>
       </ResponsiveContainer>
     );
