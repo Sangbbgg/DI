@@ -271,45 +271,38 @@ function Result({ initialData, resultData, userData, isTransportationOption }) {
 
   const data11 = [
     {
-      subject: 'Math',
+      subject: '전기',
       A: 120,
       B: 110,
-      fullMark: 150,
+      fullMark: 100,
     },
     {
-      subject: 'Chinese',
+      subject: '가스',
       A: 98,
       B: 130,
-      fullMark: 150,
+      fullMark: 30,
     },
     {
-      subject: 'English',
+      subject: '수도',
       A: 86,
       B: 130,
-      fullMark: 150,
+      fullMark: 300,
     },
     {
-      subject: 'Geography',
+      subject: '교통',
       A: 99,
       B: 100,
-      fullMark: 150,
+      fullMark: 405,
     },
     {
-      subject: 'Physics',
+      subject: '폐기물',
       A: 85,
       B: 90,
-      fullMark: 150,
-    },
-    {
-      subject: 'History',
-      A: 65,
-      B: 85,
-      fullMark: 150,
-    },
+      fullMark: 20,
+    }
   ];
 
-
-
+  console.log("barChatData",barChatData)
   return (
     <div>
       <div ref={captureRef}>
@@ -432,7 +425,7 @@ function Result({ initialData, resultData, userData, isTransportationOption }) {
             <h2>{userData.username}님의 종합평가입니다.</h2>
           </div>
           <div className="barChart" style={{ width: "70%", height: "300px" }}>
-            <ComprehensiveChart data={data11}/>
+            <ComprehensiveChart data={barChatData}/>
           </div>
         </div>
       </div>
