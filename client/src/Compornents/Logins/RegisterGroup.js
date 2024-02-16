@@ -3,19 +3,48 @@ import React, { useState } from "react";
 import DaumPostcode from "react-daum-postcode";
 import { handlePostcode } from "./Handle/Postcodehandle";
 import axios from 'axios';
+import './1.css'
 
-function Regester() {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [passwordMatch,setPasswordMatch] = useState(true);
-  const [openPostcode, setOpenPostcode] = useState(false);
-  const [address, setAddress] = useState('');
-  const [Detailedaddress, setDetailedaddress] = useState('');
-  const [phoneNumber, setphoneNumber] = useState('');
-
+function RegesterGroup() {
+  const [username, setUsername] = useState('');//이름
+  const [email, setEmail] = useState('');//이메일
+  const [password, setPassword] = useState('');//비밀번호
+  const [confirmPassword, setConfirmPassword] = useState('');//비밀번호확인
+  const [openPostcode, setOpenPostcode] = useState(false);//주소
+  const [address, setAddress] = useState('');//주소
+  const [detailedaddress, setdetailedaddress] = useState('');//상세주소
+  const [phonenumber, setphonenumber] = useState('');//핸드폰번호
+  const [emailDuplication, setEmailDuplication] = useState(true);//이메일 유효성
+  //이메일 유효성 검사 2/14 김민호
+  
   const handle = handlePostcode(openPostcode, setOpenPostcode, setAddress);
+
+  const setPasswordMatch = (match) => {
+    // setPasswordMatch(true) 또는 setPasswordMatch(false) 등으로 사용
+  };
+
+  //이메일 유효성 검사 2/14 김민호
+  const handleEmailDuplicationCheck = () => {
+    if (!email) {
+      alert('이메일을 입력해주세요!');
+      return;
+    }
+    
+  
+    // 클라이언트가 서버에 이메일 중복 확인을 요청합니다./0214 김민호
+    axios.post('http://localhost:8000/checkEmailDuplication', { email })
+      .then(response => {
+        console.log('서버 응답:', response.data);
+        setEmailDuplication(response.data.success);
+        alert(response.data.message);
+      })
+      .catch(error => {
+        console.error('이메일 중복 확인 중 오류:', error);
+        alert('이메일 중복 확인 중 오류가 발생했습니다.');
+      });
+      
+      
+  };
 
 
   const handleRegesterClick = () => {
@@ -38,6 +67,12 @@ function Regester() {
       setPasswordMatch(false);
       return;
     }
+     // 이메일이 중복되었는지 확인합니다.
+     // 이메일 유효성 검사 02/14 김민호
+     if (!emailDuplication) {
+      alert('이미 등록된 이메일입니다.');
+      return;
+    }
   
     // if (password.length < 10 || !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
     //   alert('비밀번호는 최소 10글자 이상이어야 하며, 특수문자를 포함해야 합니다.');
@@ -50,9 +85,9 @@ axios.post('http://localhost:8000/regester', {
   password,
   email,
   address,
-  Detailedaddress,
-  phoneNumber,
-  usertype: 'personal'
+  detailedaddress,
+  phonenumber,
+  usertype: 'organization'
 })
   .then(response => {
     console.log('서버 응답:', response.data);
@@ -109,13 +144,15 @@ axios.post('http://localhost:8000/regester', {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
+      <button onClick={handleEmailDuplicationCheck}>확인</button>
+      {/* 이메일 유효성 검사 02/14 김민호 */}
       <br />
 
        <input
         type="text"
         placeholder="핸드폰번호"
-        value={phoneNumber}
-        onChange={(e) => setphoneNumber(e.target.value)}
+        value={phonenumber}
+        onChange={(e) => setphonenumber(e.target.value)}
       />
 
       <br />
@@ -138,8 +175,8 @@ axios.post('http://localhost:8000/regester', {
       <input
         type="text"
         placeholder="상세주소"
-        value={Detailedaddress}
-        onChange={(e) => setDetailedaddress(e.target.value)}
+        value={detailedaddress}
+        onChange={(e) => setdetailedaddress(e.target.value)}
       />
       <br/>
       <button className="RegesterBtn" onClick={handleRegesterClick}>
@@ -152,4 +189,4 @@ axios.post('http://localhost:8000/regester', {
   );
 }
 
-export default Regester; 
+export default RegesterGroup; 

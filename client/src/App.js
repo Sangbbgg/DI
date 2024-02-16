@@ -6,7 +6,11 @@ import Footer from "./Compornents/Footer";
 import CarbonFootprint from "./view/CarbonFootprint";
 // 김민호(임시)-----------------
 import LoginPage from "./Compornents/Logins/Login";
+import Modify from "./Compornents/Logins/Modify";
 import Regester from "./Compornents/Logins/Regester";
+import RegesterPersonal from "./Compornents/Logins/RegesterPersonal";
+import RegesterGroup from "./Compornents/Logins/RegisterGroup";
+import RegesterCorporate from "./Compornents/Logins/RegisterCorporate";
 // ---------------------------
 // 이기현(임시) ------------------
 import Cart from "./view/Cart"; // 이기현_장바구니 컴포넌트
@@ -38,7 +42,11 @@ function App() {
           {/* 이주호 */}
           {/* 김민호 */}
           <Route path="/Login" element={<LoginPage />}></Route>
+          <Route path="/Modify" element={<Modify/>}></Route>
           <Route path="/Regester" element={<Regester />}></Route>
+          <Route path="/Regester/personal" element={<RegesterPersonal/>}></Route>
+          <Route path="/Regester/corporate" element={<RegesterCorporate/>}></Route>
+          <Route path="/Regester/group" element={<RegesterGroup/>}></Route>
           {/* 전윤호 */}
           <Route path="/shop" element={<Shop />} />
         </Routes>

@@ -28,6 +28,9 @@ function Header() {
           <button className="LoginBtn" onClick={handleLogout}>
             로그아웃
           </button>
+          <button>
+            <Link to="/modify">정보 수정</Link>
+          </button>
         </>
       ) : (
         // 로그아웃 상태일 때 로그인과 회원가입 버튼 표시
